@@ -398,10 +398,10 @@
 			);
 
 			if (this.o.immediateUpdates) {
-				// Trigger input updates immediately on changed year/month
+				// Trigger input updates immediately on changed century/decade/year/month
 				this._events.push([this.element, {
-					'changeYear changeMonth': $.proxy(function (e) {
-						e.date.precision = e.type === 'changeYear' ? 1 : 2;
+					'changeCentury changeDecade changeYear changeMonth': $.proxy(function (e) {
+						e.date.precision = e.type === 'changeMonth' ? 2 : 1;
 						this.update(e.date);
 					}, this)
 				}]);
@@ -1128,6 +1128,7 @@
 				}
 			} else {
 				var dateCpy = edtf(d);
+				dateCpy.precision = 3;
 				for (var dayIndex = 0; dayIndex < (month === 1 ? 28 : 31); dayIndex++) {
 					if (dayIndex % 7 === 0) {
 						html.push('<tr>');
@@ -1317,7 +1318,7 @@
 					this.viewDate.setUTCDate(1);
 
 					day = 1;
-					if (!target.hasClass('active')){
+					if (!target.hasClass('active') || target.hasClass('century') || target.hasClass('decade') || this.viewDate.unspecified.value){
 						if (this.viewMode === 1) {
 							month = target.parent().find('span').index(target);
 							year = this.viewDate.getUTCFullYear();
@@ -1325,7 +1326,13 @@
 							this.viewDate.precision = 2;
 						} else {
 							month = 0;
-							this.viewDate = edtf(target.text());
+							var yearText = target.text();
+							var sign = ''
+							if (yearText.indexOf('-') === 0){
+								sign = '-';
+								yearText = yearText.substr('1');
+							}
+							this.viewDate = edtf(sign + ('0000' + yearText).slice(-4));
 						}	
 
 						this._trigger(DPGlobal.viewModes[this.viewMode - 1].e, this.viewDate);
@@ -1469,7 +1476,7 @@
 				new_date.setUTCDate(--day);
 				new_date.setUTCMonth(new_month);
 			}
-			return new_date;
+			return edtf(new_date);
 		},
 
 		moveYear: function (date, dir) {
