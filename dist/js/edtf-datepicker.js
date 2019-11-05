@@ -885,7 +885,7 @@
 			}
 			if (this.dates.contains(date) !== -1)
 				cls.push('active');
-			if (!this.dateWithinRange(date)) {
+			if (!this.dateWithinRange(date) || date.year > 9999 || date.year < -9999) {
 				cls.push('disabled');
 			}
 			if (this.dateIsDisabled(date)) {
@@ -912,39 +912,42 @@
 		},
 
 		_fill_status_table: function (selector, d) {
-			var html = '<table>' +
-				'<thead>' +
-				'<tr>' +
-				'<th></th>' +
-				'<th>Approximate</th>' +
-				'<th>Uncertain</th>' +
-				'</tr>' +
-				'</thead>' +
-				'<tbody>';
-			switch (d.precision) {
-				case 3:
-					html += '<tr>' +
-						'<td>Day</td>' +
-						'<td><input type="checkbox" class="dateStatus" name="approximate" value="day" ' + (d.approximate.is('day') ? 'checked' : '') + '/></td>' +
-						'<td><input type="checkbox" class="dateStatus" name="uncertain" value="day" ' + (d.uncertain.is('day') ? 'checked' : '') + '/></td>' +
-						'</tr>';
-				/* falls through */
-				case 2:
-					html += '<tr>' +
-						'<td>Month</td>' +
-						'<td><input type="checkbox" class="dateStatus" name="approximate" value="month" ' + (d.approximate.is('month') ? 'checked' : '') + '/></td>' +
-						'<td><input type="checkbox" class="dateStatus" name="uncertain" value="month" ' + (d.uncertain.is('month') ? 'checked' : '') + '/></td>' +
-						'</tr>';
-				/* falls through */
-				default:
-					html += '<tr>' +
-						'<td>Year</td>' +
-						'<td><input type="checkbox" class="dateStatus" name="approximate" value="year" ' + (d.approximate.is('year') ? 'checked' : '') + '/></td>' +
-						'<td><input type="checkbox" class="dateStatus" name="uncertain" value="year" ' + (d.uncertain.is('year') ? 'checked' : '') + '/></td>' +
-						'</tr>';
-					break;
+			var html = ''
+			if (!(d instanceof edtf.Year)) {
+				html = '<table>' +
+					'<thead>' +
+					'<tr>' +
+					'<th></th>' +
+					'<th>Approximate</th>' +
+					'<th>Uncertain</th>' +
+					'</tr>' +
+					'</thead>' +
+					'<tbody>';
+				switch (d.precision) {
+					case 3:
+						html += '<tr>' +
+							'<td>Day</td>' +
+							'<td><input type="checkbox" class="dateStatus" name="approximate" value="day" ' + (d.approximate.is('day') ? 'checked' : '') + '/></td>' +
+							'<td><input type="checkbox" class="dateStatus" name="uncertain" value="day" ' + (d.uncertain.is('day') ? 'checked' : '') + '/></td>' +
+							'</tr>';
+					/* falls through */
+					case 2:
+						html += '<tr>' +
+							'<td>Month</td>' +
+							'<td><input type="checkbox" class="dateStatus" name="approximate" value="month" ' + (d.approximate.is('month') ? 'checked' : '') + '/></td>' +
+							'<td><input type="checkbox" class="dateStatus" name="uncertain" value="month" ' + (d.uncertain.is('month') ? 'checked' : '') + '/></td>' +
+							'</tr>';
+					/* falls through */
+					default:
+						html += '<tr>' +
+							'<td>Year</td>' +
+							'<td><input type="checkbox" class="dateStatus" name="approximate" value="year" ' + (d.approximate.is('year') ? 'checked' : '') + '/></td>' +
+							'<td><input type="checkbox" class="dateStatus" name="uncertain" value="year" ' + (d.uncertain.is('year') ? 'checked' : '') + '/></td>' +
+							'</tr>';
+						break;
+				}
+				html += '</tbody></table>';
 			}
-			html += '</tbody></table>';
 			this.picker.find(selector + ' tfoot .statuses').html(html);
 		},
 
@@ -1013,7 +1016,7 @@
 				html += '<span class="' + classes.join(' ') + '"' + (tooltip ? ' title="' + tooltip + '"' : '') + '>' + valLabel + '</span>';
 			}
 
-			view.find('.datepicker-switch').text(startVal + '-' + endVal);
+			view.find('.datepicker-switch').text(startVal + ' - ' + endVal);
 			view.find('td').html(html);
 		},
 
@@ -1021,7 +1024,7 @@
 		fill: function () {
 			var d = edtf(this.viewDate),
 				year = d.year,
-				month = d.month,
+				month = d instanceof edtf.Year ? 0 : d.month,
 				startYear = this.o.startDate !== -Infinity ? this.o.startDate.getUTCFullYear() : -Infinity,
 				startMonth = this.o.startDate !== -Infinity ? this.o.startDate.getUTCMonth() : -Infinity,
 				endYear = this.o.endDate !== Infinity ? this.o.endDate.getUTCFullYear() : Infinity,
@@ -1050,151 +1053,155 @@
 				.text(this.o.title)
 				.css('display', typeof this.o.title === 'string' && this.o.title !== '' ? 'table-cell' : 'none');
 			this.updateNavArrows();
-			this.fillMonths();
-			this.toggleDowHeader(specifiedMonth);
-			var prevMonth = UTCDate(year, month, 0),
-				day = prevMonth.getUTCDate();
-			prevMonth.setUTCDate(day - (prevMonth.getUTCDay() - this.o.weekStart + 7) % 7);
-			var nextMonth = new Date(prevMonth);
-			if (prevMonth.getUTCFullYear() < 100) {
-				nextMonth.setUTCFullYear(prevMonth.getUTCFullYear());
-			}
-			nextMonth.setUTCDate(nextMonth.getUTCDate() + 42);
-			nextMonth = nextMonth.valueOf();
-			var html = [];
-			var weekDay, clsName;
-			if (specifiedMonth) {
-				while (prevMonth.valueOf() < nextMonth) {
-					weekDay = prevMonth.getUTCDay();
-					if (weekDay === this.o.weekStart) {
-						html.push('<tr>');
-						if (this.o.calendarWeeks) {
-							// ISO 8601: First week contains first thursday.
-							// ISO also states week starts on Monday, but we can be more abstract here.
-							var
-								// Start of current week: based on weekstart/current date
-								ws = new Date(+prevMonth + (this.o.weekStart - weekDay - 7) % 7 * 864e5),
-								// Thursday of this week
-								th = new Date(Number(ws) + (7 + 4 - ws.getUTCDay()) % 7 * 864e5),
-								// First Thursday of year, year from thursday
-								yth = new Date(Number(yth = UTCDate(th.getUTCFullYear(), 0, 1)) + (7 + 4 - yth.getUTCDay()) % 7 * 864e5),
-								// Calendar week: ms between thursdays, div ms per day, div 7 days
-								calWeek = (th - yth) / 864e5 / 7 + 1;
-							html.push('<td class="cw">' + calWeek + '</td>');
+
+			if (!(d instanceof edtf.Year)) {
+				this.fillMonths();
+				this.toggleDowHeader(specifiedMonth);
+				var prevMonth = UTCDate(year, month, 0),
+					day = prevMonth.getUTCDate();
+				prevMonth.setUTCDate(day - (prevMonth.getUTCDay() - this.o.weekStart + 7) % 7);
+				var nextMonth = new Date(prevMonth);
+				if (prevMonth.getUTCFullYear() < 100) {
+					nextMonth.setUTCFullYear(prevMonth.getUTCFullYear());
+				}
+				nextMonth.setUTCDate(nextMonth.getUTCDate() + 42);
+				nextMonth = nextMonth.valueOf();
+				var html = [];
+				var weekDay, clsName;
+				if (specifiedMonth) {
+					while (prevMonth.valueOf() < nextMonth) {
+						weekDay = prevMonth.getUTCDay();
+						if (weekDay === this.o.weekStart) {
+							html.push('<tr>');
+							if (this.o.calendarWeeks) {
+								// ISO 8601: First week contains first thursday.
+								// ISO also states week starts on Monday, but we can be more abstract here.
+								var
+									// Start of current week: based on weekstart/current date
+									ws = new Date(+prevMonth + (this.o.weekStart - weekDay - 7) % 7 * 864e5),
+									// Thursday of this week
+									th = new Date(Number(ws) + (7 + 4 - ws.getUTCDay()) % 7 * 864e5),
+									// First Thursday of year, year from thursday
+									yth = new Date(Number(yth = UTCDate(th.getUTCFullYear(), 0, 1)) + (7 + 4 - yth.getUTCDay()) % 7 * 864e5),
+									// Calendar week: ms between thursdays, div ms per day, div 7 days
+									calWeek = (th - yth) / 864e5 / 7 + 1;
+								html.push('<td class="cw">' + calWeek + '</td>');
+							}
+						}
+						var curDate = edtf(d);
+						curDate.setUTCFullYear(prevMonth.year);
+						curDate.setUTCMonth(prevMonth.month);
+						curDate.setUTCDate(prevMonth.date);
+						curDate.precision = 3;
+						clsName = this.getClassNames(curDate);
+						clsName.push('day');
+
+						var content = prevMonth.getUTCDate();
+
+						if (this.o.beforeShowDay !== $.noop) {
+							before = this.o.beforeShowDay(this._utc_to_local(prevMonth));
+							if (before === undefined)
+								before = {};
+							else if (typeof before === 'boolean')
+								before = { enabled: before };
+							else if (typeof before === 'string')
+								before = { classes: before };
+							if (before.enabled === false)
+								clsName.push('disabled');
+							if (before.classes)
+								clsName = clsName.concat(before.classes.split(/\s+/));
+							if (before.tooltip)
+								tooltip = before.tooltip;
+							if (before.content)
+								content = before.content;
+						}
+
+						//Check if uniqueSort exists (supported by jquery >=1.12 and >=2.2)
+						//Fallback to unique function for older jquery versions
+						if ($.isFunction($.uniqueSort)) {
+							clsName = $.uniqueSort(clsName);
+						} else {
+							clsName = $.unique(clsName);
+						}
+
+						html.push('<td class="' + clsName.join(' ') + '"' + (tooltip ? ' title="' + tooltip + '"' : '') + ' data-date="' + edtf(curDate).edtf + '">' + content + '</td>');
+						tooltip = null;
+						if (weekDay === this.o.weekEnd) {
+							html.push('</tr>');
+						}
+						prevMonth.setUTCDate(prevMonth.getUTCDate() + 1);
+					}
+				} else {
+					var dateCpy = edtf(d);
+					dateCpy.precision = 3;
+					for (var dayIndex = 0; dayIndex < (month === 1 ? 28 : 31); dayIndex++) {
+						if (dayIndex % 7 === 0) {
+							html.push('<tr>');
+						}
+						dateCpy.setDate(dayIndex + 1);
+						clsName = this.getClassNames(dateCpy);
+						clsName.push('day');
+
+						//Check if uniqueSort exists (supported by jquery >=1.12 and >=2.2)
+						//Fallback to unique function for older jquery versions
+						if ($.isFunction($.uniqueSort)) {
+							clsName = $.uniqueSort(clsName);
+						} else {
+							clsName = $.unique(clsName);
+						}
+
+						html.push('<td class="' + clsName.join(' ') + '"' + (tooltip ? ' title="' + tooltip + '"' : '') + ' data-date="' + dateCpy.edtf + '">' + (dayIndex + 1) + '</td>');
+						tooltip = null;
+						if (dayIndex % 7 === 6) {
+							html.push('</tr>');
 						}
 					}
-					var curDate = edtf(d);
-					curDate.setUTCFullYear(prevMonth.year);
-					curDate.setUTCMonth(prevMonth.month);
-					curDate.setUTCDate(prevMonth.date);
-					curDate.precision = 3;
-					clsName = this.getClassNames(curDate);
-					clsName.push('day');
+				}
 
-					var content = prevMonth.getUTCDate();
+				this.picker.find('.datepicker-days tbody').html(html.join(''));
 
-					if (this.o.beforeShowDay !== $.noop) {
-						before = this.o.beforeShowDay(this._utc_to_local(prevMonth));
+				var monthsTitle = dates[this.o.language].monthsTitle || dates['en'].monthsTitle || 'Months';
+				var months = this.picker.find('.datepicker-months')
+					.find('.datepicker-switch')
+					.text(this.o.maxViewMode < 2 ? monthsTitle : year)
+					.end()
+					.find('tbody span').removeClass('active');
+
+				$.each(this.dates, function (i, d) {
+					if (d.year === year && d.precision > 1 && !d.unspecified.is('month'))
+						months.eq(d.month).addClass('active');
+				});
+
+				if (year < startYear || year > endYear) {
+					months.addClass('disabled');
+				}
+				if (year === startYear) {
+					months.slice(0, startMonth).addClass('disabled');
+				}
+				if (year === endYear) {
+					months.slice(endMonth + 1).addClass('disabled');
+				}
+
+				if (this.o.beforeShowMonth !== $.noop) {
+					var that = this;
+					$.each(months, function (i, month) {
+						var moDate = new Date(year, i, 1);
+						var before = that.o.beforeShowMonth(moDate);
 						if (before === undefined)
 							before = {};
 						else if (typeof before === 'boolean')
 							before = { enabled: before };
 						else if (typeof before === 'string')
 							before = { classes: before };
-						if (before.enabled === false)
-							clsName.push('disabled');
+						if (before.enabled === false && !$(month).hasClass('disabled'))
+							$(month).addClass('disabled');
 						if (before.classes)
-							clsName = clsName.concat(before.classes.split(/\s+/));
+							$(month).addClass(before.classes);
 						if (before.tooltip)
-							tooltip = before.tooltip;
-						if (before.content)
-							content = before.content;
-					}
-
-					//Check if uniqueSort exists (supported by jquery >=1.12 and >=2.2)
-					//Fallback to unique function for older jquery versions
-					if ($.isFunction($.uniqueSort)) {
-						clsName = $.uniqueSort(clsName);
-					} else {
-						clsName = $.unique(clsName);
-					}
-
-					html.push('<td class="' + clsName.join(' ') + '"' + (tooltip ? ' title="' + tooltip + '"' : '') + ' data-date="' + edtf(curDate).edtf + '">' + content + '</td>');
-					tooltip = null;
-					if (weekDay === this.o.weekEnd) {
-						html.push('</tr>');
-					}
-					prevMonth.setUTCDate(prevMonth.getUTCDate() + 1);
+							$(month).prop('title', before.tooltip);
+					});
 				}
-			} else {
-				var dateCpy = edtf(d);
-				dateCpy.precision = 3;
-				for (var dayIndex = 0; dayIndex < (month === 1 ? 28 : 31); dayIndex++) {
-					if (dayIndex % 7 === 0) {
-						html.push('<tr>');
-					}
-					dateCpy.setDate(dayIndex + 1);
-					clsName = this.getClassNames(dateCpy);
-					clsName.push('day');
 
-					//Check if uniqueSort exists (supported by jquery >=1.12 and >=2.2)
-					//Fallback to unique function for older jquery versions
-					if ($.isFunction($.uniqueSort)) {
-						clsName = $.uniqueSort(clsName);
-					} else {
-						clsName = $.unique(clsName);
-					}
-
-					html.push('<td class="' + clsName.join(' ') + '"' + (tooltip ? ' title="' + tooltip + '"' : '') + ' data-date="' + dateCpy.edtf + '">' + (dayIndex + 1) + '</td>');
-					tooltip = null;
-					if (dayIndex % 7 === 6) {
-						html.push('</tr>');
-					}
-				}
-			}
-
-			this.picker.find('.datepicker-days tbody').html(html.join(''));
-
-			var monthsTitle = dates[this.o.language].monthsTitle || dates['en'].monthsTitle || 'Months';
-			var months = this.picker.find('.datepicker-months')
-				.find('.datepicker-switch')
-				.text(this.o.maxViewMode < 2 ? monthsTitle : year)
-				.end()
-				.find('tbody span').removeClass('active');
-
-			$.each(this.dates, function (i, d) {
-				if (d.year === year && d.precision > 1 && !d.unspecified.is('month'))
-					months.eq(d.month).addClass('active');
-			});
-
-			if (year < startYear || year > endYear) {
-				months.addClass('disabled');
-			}
-			if (year === startYear) {
-				months.slice(0, startMonth).addClass('disabled');
-			}
-			if (year === endYear) {
-				months.slice(endMonth + 1).addClass('disabled');
-			}
-
-			if (this.o.beforeShowMonth !== $.noop) {
-				var that = this;
-				$.each(months, function (i, month) {
-					var moDate = new Date(year, i, 1);
-					var before = that.o.beforeShowMonth(moDate);
-					if (before === undefined)
-						before = {};
-					else if (typeof before === 'boolean')
-						before = { enabled: before };
-					else if (typeof before === 'string')
-						before = { classes: before };
-					if (before.enabled === false && !$(month).hasClass('disabled'))
-						$(month).addClass('disabled');
-					if (before.classes)
-						$(month).addClass(before.classes);
-					if (before.tooltip)
-						$(month).prop('title', before.tooltip);
-				});
 			}
 
 			// Generating decade/years picker
@@ -1222,7 +1229,6 @@
 				endYear,
 				this.o.beforeShowDecade
 			);
-
 			// Generating millennium/centuries picker
 			this._fill_yearsView(
 				'.datepicker-centuries',
@@ -1315,10 +1321,12 @@
 					|| target.hasClass('year')
 					|| target.hasClass('decade')
 					|| target.hasClass('century')) {
-					this.viewDate.setUTCDate(1);
+
+					if (!(this.viewDate instanceof edtf.Year))
+						this.viewDate.setUTCDate(1);
 
 					day = 1;
-					if (!target.hasClass('active') || target.hasClass('century') || target.hasClass('decade') || this.viewDate.unspecified.value){
+					if (!target.hasClass('active') || target.hasClass('century') || target.hasClass('decade') || this.viewDate.unspecified.value) {
 						if (this.viewMode === 1) {
 							month = target.parent().find('span').index(target);
 							year = this.viewDate.getUTCFullYear();
@@ -1328,12 +1336,17 @@
 							month = 0;
 							var yearText = target.text();
 							var sign = ''
-							if (yearText.indexOf('-') === 0){
+							if (yearText.indexOf('-') === 0) {
 								sign = '-';
 								yearText = yearText.substr('1');
 							}
-							this.viewDate = edtf(sign + ('0000' + yearText).slice(-4));
-						}	
+							if (yearText.length > 4) {
+								var significance = (yearText.match(/X/g) || []).length;
+								this.viewDate = edtf('Y' + sign + yearText.replace(/X/g, '0') + (significance ? 'S' + significance : ''))
+							} else {
+								this.viewDate = edtf(sign + ('0000' + yearText).slice(-4));
+							}
+						}
 
 						this._trigger(DPGlobal.viewModes[this.viewMode - 1].e, this.viewDate);
 					}
@@ -1341,7 +1354,8 @@
 					if (this.viewMode === this.o.minViewMode) {
 						this._setDate(UTCDate(year, month, day));
 					} else {
-						this.setViewMode(this.viewMode - 1);
+						if (!(this.viewDate instanceof edtf.Year))
+							this.setViewMode(this.viewMode - 1);
 						this.fill();
 					}
 				}
@@ -1377,7 +1391,10 @@
 			if (this.viewMode !== 0) {
 				dir *= DPGlobal.viewModes[this.viewMode].navStep * 12;
 			}
-			this.viewDate = this.moveMonth(this.viewDate, dir);
+			var newDate = this.moveMonth(this.viewDate, dir);
+			if (newDate.year > 9999 || newDate.year < -9999)
+				newDate = edtf('Y' + newDate.year);
+			this.viewDate = newDate;
 			this._trigger(DPGlobal.viewModes[this.viewMode].e, this.viewDate);
 			this.fill();
 		},
@@ -1431,7 +1448,7 @@
 		},
 
 		moveMonth: function (date, dir) {
-			if (!isValidDate(date))
+			if (!(date instanceof edtf.Year) && !isValidDate(date))
 				return this.o.defaultViewDate;
 			if (!dir)
 				return date;
