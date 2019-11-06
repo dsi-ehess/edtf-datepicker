@@ -22,9 +22,23 @@ module.exports = function (grunt) {
                 src: [
                     "node_modules/edtf/index.js"
                 ],
-                dest: './dist/js/edtf.js',
+                dest: './assets/js/edtf.js',
                 options: {
                     browserifyOptions: { standalone: 'edtf' },
+                }
+            },
+            testing: {
+                src: [
+                    "node_modules/browser-edtf/index.js"
+                ],
+                dest: './assets/test/edtf.js',
+                options: {
+                    browserifyOptions: { standalone: 'edtf' },
+                    transform: [["babelify", {
+                        "global": true,
+                        "presets": [["@babel/preset-env"]],
+                        "plugins": [["@babel/transform-runtime", {"helpers": false}]]
+                    }]]
                 }
             }
         },
@@ -46,6 +60,13 @@ module.exports = function (grunt) {
                     jshintrc: 'grunt/.jshintrc'
                 },
                 src: 'Gruntfile.js'
+            }
+        },
+        qunit: {
+            main: 'tests/tests.html',
+            timezone: 'tests/timezone.html',
+            options: {
+                console: false
             }
         },
         concat: {
@@ -198,7 +219,7 @@ module.exports = function (grunt) {
     require('time-grunt')(grunt);
 
     // JS distribution task.
-    grunt.registerTask('dist-js', ['concat', 'uglify:main', 'uglify:locales', 'usebanner:js', 'browserify']);
+    grunt.registerTask('dist-js', ['concat', 'uglify:main', 'uglify:locales', 'usebanner:js', 'browserify:development']);
 
     // CSS distribution task.
     grunt.registerTask('less-compile', 'less');
@@ -210,9 +231,15 @@ module.exports = function (grunt) {
     // Code check tasks.
     grunt.registerTask('lint-js', 'Lint all js files with jshint', ['jshint']);
     grunt.registerTask('lint-css', 'Lint all css files', ['dist-css', 'csslint:dist']);
+    grunt.registerTask('qunit-all', 'Run qunit tests', ['qunit:main', 'qunit-timezone']);
+    grunt.registerTask('test', 'Lint files and run unit tests', ['lint-js', /*'lint-css',*/ 'browserify:testing', 'qunit-all']);
 
     // Version numbering task.
     // grunt bump-version --newver=X.Y.Z
     grunt.registerTask('bump-version', 'string-replace');
 
+    grunt.registerTask('qunit-timezone', 'Run timezone tests', function () {
+        process.env.TZ = 'Europe/Moscow';
+        grunt.task.run('qunit:timezone');
+    });
 };

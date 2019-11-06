@@ -912,7 +912,7 @@
 		},
 
 		_fill_status_table: function (selector, d) {
-			var html = ''
+			var html = '';
 			if (!(d instanceof edtf.Year)) {
 				html = '<table>' +
 					'<thead>' +
@@ -1335,14 +1335,14 @@
 						} else {
 							month = 0;
 							var yearText = target.text();
-							var sign = ''
+							var sign = '';
 							if (yearText.indexOf('-') === 0) {
 								sign = '-';
 								yearText = yearText.substr('1');
 							}
 							if (yearText.length > 4) {
 								var significance = (yearText.match(/X/g) || []).length;
-								this.viewDate = edtf('Y' + sign + yearText.replace(/X/g, '0') + (significance ? 'S' + significance : ''))
+								this.viewDate = edtf('Y' + sign + yearText.replace(/X/g, '0') + (significance ? 'S' + significance : ''));
 							} else {
 								this.viewDate = edtf(sign + ('0000' + yearText).slice(-4));
 							}

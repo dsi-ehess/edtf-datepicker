@@ -8,4 +8,5 @@
 # Folders to ignore
 node_modules
 
-dist/js/edtf.js
+assets/js/edtf.js
+assets/test/edtf.js
