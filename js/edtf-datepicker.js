@@ -1337,7 +1337,12 @@
 						this.viewDate.setUTCDate(1);
 
 					day = 1;
-					if (!target.hasClass('active') || target.hasClass('century') || target.hasClass('decade') || this.viewDate.unspecified.value) {
+					if (!target.hasClass('active')
+						|| target.hasClass('century')
+						|| target.hasClass('decade')
+						// allow opening unspecified dates to select a specific one
+						|| this.viewDate.significant
+						|| (this.viewDate.unspecified && this.viewDate.unspecified.value)) {
 						if (this.viewMode === 1) {
 							month = target.parent().find('span').index(target);
 							year = this.viewDate.getUTCFullYear();
@@ -1365,7 +1370,7 @@
 					if (this.viewMode === this.o.minViewMode) {
 						this._setDate(UTCDate(year, month, day));
 					} else {
-						if (!(this.viewDate instanceof edtf.Year))
+						if (!(this.viewDate instanceof edtf.Year) || this.viewMode > 2)
 							this.setViewMode(this.viewMode - 1);
 						this.fill();
 					}
@@ -1404,7 +1409,7 @@
 			}
 			var newDate = this.moveMonth(this.viewDate, dir);
 			if (newDate.year > 9999 || newDate.year < -9999)
-				newDate = edtf('Y' + newDate.year);
+				newDate = edtf('Y' + newDate.year + (this.viewMode - 2 ? 'S' + (this.viewMode - 2) : '' ));
 			this.viewDate = newDate;
 			this._trigger(DPGlobal.viewModes[this.viewMode].e, this.viewDate);
 			this.fill();
