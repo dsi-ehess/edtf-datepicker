@@ -409,10 +409,11 @@
 			);
 
 			if (this.o.immediateUpdates) {
-				// Trigger input updates immediately on changed century/decade/year/month
+				// Trigger input updates immediately on changed millennium/century/decade/year/month
 				this._events.push([this.element, {
-					'changeCentury changeDecade changeYear changeMonth': $.proxy(function (e) {
+					'changeMillennium changeCentury changeDecade changeYear changeMonth': $.proxy(function (e) {
 						e.date.precision = e.type === 'changeMonth' ? 2 : 1;
+						e.date = edtf(e.date.edtf);
 						this.update(e.date);
 					}, this)
 				}]);
@@ -1050,10 +1051,11 @@
 				before;
 			if (isNaN(year) || isNaN(month))
 				return;
-			if (d instanceof Date)
+			if (d instanceof edtf.Date) {
 				specifiedMonth = !d.unspecified.is('month') && !d.unspecified.is('year');
-			this.picker.find('.datepicker-days .datepicker-switch')
-				.text(d.edtf);
+				this.picker.find('.datepicker-days .datepicker-switch')
+					.text(DPGlobal.formatDate(d, 'MM yyyy', this.o.language));
+			}
 			this.picker.find('tfoot .today')
 				.text(todaytxt)
 				.css('display', titleBtnVisible ? 'table-cell' : 'none');
@@ -1070,6 +1072,8 @@
 				this.toggleDowHeader(specifiedMonth);
 				var prevMonth = UTCDate(year, month, 0),
 					day = prevMonth.getUTCDate();
+				prevMonth.approximate.value = d.approximate.value;
+				prevMonth.uncertain.value = d.uncertain.value;
 				prevMonth.setUTCDate(day - (prevMonth.getUTCDay() - this.o.weekStart + 7) % 7);
 				var nextMonth = new Date(prevMonth);
 				if (prevMonth.getUTCFullYear() < 100) {
@@ -1099,12 +1103,8 @@
 								html.push('<td class="cw">' + calWeek + '</td>');
 							}
 						}
-						var curDate = edtf(d);
-						curDate.setUTCFullYear(prevMonth.year);
-						curDate.setUTCMonth(prevMonth.month);
-						curDate.setUTCDate(prevMonth.date);
-						curDate.precision = 3;
-						clsName = this.getClassNames(curDate);
+						prevMonth.precision = 3;
+						clsName = this.getClassNames(prevMonth);
 						clsName.push('day');
 
 						var content = prevMonth.getUTCDate();
@@ -1135,7 +1135,7 @@
 							clsName = $.unique(clsName);
 						}
 
-						html.push('<td class="' + clsName.join(' ') + '"' + (tooltip ? ' title="' + tooltip + '"' : '') + ' data-date="' + edtf(curDate).edtf + '">' + content + '</td>');
+						html.push('<td class="' + clsName.join(' ') + '"' + (tooltip ? ' title="' + tooltip + '"' : '') + ' data-date="' + edtf(prevMonth).edtf + '">' + content + '</td>');
 						tooltip = null;
 						if (weekDay === this.o.weekEnd) {
 							html.push('</tr>');
@@ -1287,8 +1287,8 @@
 					break;
 			}
 
-			this.picker.find('.prev').toggleClass('disabled', prevIsDisabled || !!unspecifiedMonth);
-			this.picker.find('.next').toggleClass('disabled', nextIsDisabled || !!unspecifiedMonth);
+			this.picker.find('.prev').toggleClass('disabled', prevIsDisabled);
+			this.picker.find('.next').toggleClass('disabled', nextIsDisabled);
 		},
 
 		click: function (e) {
@@ -1408,8 +1408,19 @@
 				dir *= DPGlobal.viewModes[this.viewMode].navStep * 12;
 			}
 			var newDate = this.moveMonth(this.viewDate, dir);
+			switch (this.viewMode) {
+				case 2:
+					newDate.unspecified.value = 8;
+					break;
+				case 3:
+					newDate.unspecified.value = 12;
+					break;
+				case 4:
+					newDate.unspecified.value = 14;
+					break;
+			}
 			if (newDate.year > 9999 || newDate.year < -9999)
-				newDate = edtf('Y' + newDate.year + (this.viewMode - 2 ? 'S' + (this.viewMode - 2) : '' ));
+				newDate = edtf('Y' + newDate.year + (this.viewMode - 1 ? 'S' + (this.viewMode - 1) : ''));
 			this.viewDate = newDate;
 			this._trigger(DPGlobal.viewModes[this.viewMode].e, this.viewDate);
 			this.fill();
