@@ -1389,12 +1389,13 @@
 			var date = edtf(edtfString);
 
 			if (this.o.updateViewDate) {
-				if (date.year !== this.viewDate.year) {
-					this._trigger('changeYear', this.viewDate);
+				var viewDate = edtf(this.viewDate);
+				if (date.year !== viewDate.year) {
+					this._trigger('changeYear', viewDate);
 				}
 
-				if (date.month !== this.viewDate.month) {
-					this._trigger('changeMonth', this.viewDate);
+				if (date.month !== viewDate.month) {
+					this._trigger('changeMonth', viewDate);
 				}
 			}
 			this._setDate(date);
@@ -1930,6 +1931,8 @@
 				return '';
 			if (typeof format === 'string')
 				format = DPGlobal.parseFormat(format);
+			if (!format)
+				return date.edtf;
 			if (format.toDisplay)
 				return format.toDisplay(date, format, language);
 			var val = {
