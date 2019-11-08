@@ -1,6 +1,6 @@
 module('Events on initialization', {
     setup: function(){
-        this.input = $('<input type="text" value="31-03-2011">')
+        this.input = $('<input type="text" value="2011-03-31">')
             .appendTo('#qunit-fixture')
     }
 });
@@ -26,9 +26,9 @@ test('When initializing the datepicker, it should trigger no change or changeDat
 
 module('Events', {
     setup: function(){
-        this.input = $('<input type="text" value="31-03-2011">')
+        this.input = $('<input type="text" value="2011-03-31">')
                         .appendTo('#qunit-fixture')
-                        .datepicker({format: "dd-mm-yyyy"})
+                        .datepicker()
                         .focus(); // Activate for visibility checks
         this.dp = this.input.data('datepicker');
         this.picker = this.dp.picker;
@@ -54,8 +54,8 @@ test('Selecting a year from decade view triggers changeYear', function(){
     ok(this.picker.find('.datepicker-months').is(':visible'), 'Month picker is visible');
     equal(this.dp.viewMode, 1);
     // Not modified when switching modes
-    datesEqual(this.dp.viewDate, UTCDate(2011, 2, 31));
-    datesEqual(this.dp.dates[0], UTCDate(2011, 2, 31));
+    datesEqual(this.dp.viewDate, edtf('2011-03-31'));
+    datesEqual(this.dp.dates[0], edtf('2011-03-31'));
 
     target = this.picker.find('.datepicker-months thead th.datepicker-switch');
     ok(target.is(':visible'), 'View switcher is visible');
@@ -64,16 +64,16 @@ test('Selecting a year from decade view triggers changeYear', function(){
     ok(this.picker.find('.datepicker-years').is(':visible'), 'Year picker is visible');
     equal(this.dp.viewMode, 2);
     // Not modified when switching modes
-    datesEqual(this.dp.viewDate, UTCDate(2011, 2, 31));
-    datesEqual(this.dp.dates[0], UTCDate(2011, 2, 31));
+    datesEqual(this.dp.viewDate, edtf('2011-03-31'));
+    datesEqual(this.dp.dates[0], edtf('2011-03-31'));
 
     // Change years to test internal state changes
     target = this.picker.find('.datepicker-years tbody span:contains(2010)');
     target.click();
     equal(this.dp.viewMode, 1);
     // Only viewDate modified
-    datesEqual(this.dp.viewDate, UTCDate(2010, 2, 1));
-    datesEqual(this.dp.dates[0], UTCDate(2011, 2, 31));
+    datesEqual(this.dp.viewDate, edtf('2010'));
+    datesEqual(this.dp.dates[0], edtf('2010'));
     equal(triggered, 1);
 });
 
@@ -124,15 +124,15 @@ test('Selecting a month from year view triggers changeMonth', function(){
     ok(this.picker.find('.datepicker-months').is(':visible'), 'Month picker is visible');
     equal(this.dp.viewMode, 1);
     // Not modified when switching modes
-    datesEqual(this.dp.viewDate, UTCDate(2011, 2, 31));
-    datesEqual(this.dp.dates[0], UTCDate(2011, 2, 31));
+    datesEqual(this.dp.viewDate, edtf('2011-03-31'));
+    datesEqual(this.dp.dates[0], edtf('2011-03-31'));
 
     target = this.picker.find('.datepicker-months tbody span:contains(Apr)');
     target.click();
     equal(this.dp.viewMode, 0);
     // Only viewDate modified
-    datesEqual(this.dp.viewDate, UTCDate(2011, 3, 1));
-    datesEqual(this.dp.dates[0], UTCDate(2011, 2, 31));
+    datesEqual(this.dp.viewDate, edtf('2011-04'));
+    datesEqual(this.dp.dates[0], edtf('2011-04'));
     equal(triggered, 1);
 });
 
@@ -177,10 +177,10 @@ test('format() returns a formatted date string', function(){
     target = this.picker.find('.datepicker-days tbody td:nth(15)');
     target.click();
 
-    datesEqual(this.dp.viewDate, UTCDate(2011, 2, 14));
-    datesEqual(this.dp.dates[0], UTCDate(2011, 2, 14));
+    datesEqual(this.dp.viewDate, edtf('2011-03-14'));
+    datesEqual(this.dp.dates[0], edtf('2011-03-14'));
     equal(error, undefined);
-    equal(out, '14-03-2011');
+    equal(out, '2011-03-14');
 });
 
 test('format(altformat) returns a formatted date string', function(){
@@ -200,8 +200,8 @@ test('format(altformat) returns a formatted date string', function(){
     target = this.picker.find('.datepicker-days tbody td:nth(15)');
     target.click();
 
-    datesEqual(this.dp.viewDate, UTCDate(2011, 2, 14));
-    datesEqual(this.dp.dates[0], UTCDate(2011, 2, 14));
+    datesEqual(this.dp.viewDate, edtf('2011-03-14'));
+    datesEqual(this.dp.dates[0], edtf('2011-03-14'));
     equal(error, undefined);
     equal(out, '3/14/11');
 });
@@ -232,7 +232,7 @@ test('format(ix) returns a formatted date string of the ix\'th date selected', f
     equal(this.dp.dates.length, 3);
 
     equal(error, undefined);
-    equal(out, '14-03-2011');
+    equal(out, '2011-03-14');
 });
 
 test('format(ix, altformat) returns a formatted date string', function(){
@@ -265,10 +265,9 @@ test('format(ix, altformat) returns a formatted date string', function(){
 });
 
 test('Clear button: triggers change and changeDate events', function(){
-    this.input = $('<input type="text" value="31-03-2011">')
+    this.input = $('<input type="text" value="2011-03-31">')
                     .appendTo('#qunit-fixture')
                     .datepicker({
-                        format: "dd-mm-yyyy",
                         clearBtn: true
                     })
                     .focus(); // Activate for visibility checks
@@ -300,11 +299,9 @@ test('Clear button: triggers change and changeDate events', function(){
 });
 
 test('setDate: triggers change and changeDate events', function(){
-    this.input = $('<input type="text" value="31-03-2011">')
+    this.input = $('<input type="text" value="2011-03-31">')
                     .appendTo('#qunit-fixture')
-                    .datepicker({
-                        format: "dd-mm-yyyy"
-                    })
+                    .datepicker()
                     .focus(); // Activate for visibility checks
     this.dp = this.input.data('datepicker');
     this.picker = this.dp.picker;
@@ -332,7 +329,7 @@ test('setDate: triggers change and changeDate events', function(){
 });
 
 test('paste must update the date', function() {
-    var dateToPaste = '22-07-2015';
+    var dateToPaste = '2015-07-22';
     var evt = {
         type: 'paste',
         originalEvent: {
@@ -345,7 +342,7 @@ test('paste must update the date', function() {
         }
     };
     this.input.trigger(evt);
-    datesEqual(this.dp.dates[0], UTCDate(2015, 6, 22));
+    datesEqual(this.dp.dates[0], edtf('2015-07-22'));
 
     ok(evt.originalEvent.isDefaultPrevented, 'prevented original event');
 });
@@ -385,7 +382,7 @@ test('Selecting date from previous month in january triggers changeMonth/changeY
         triggeredM = 0,
         triggeredY = 0;
 
-    this.input.val('01-01-2011');
+    this.input.val('2011-01-01');
     this.dp.update();
 
     this.input.on('changeMonth', function(){
@@ -414,7 +411,7 @@ test('Selecting date from next month triggers changeMonth', function() {
     });
 
     // find first day of previous month
-    target = this.picker.find('.datepicker-days tbody td:last');
+    target = this.picker.find('.datepicker-days tbody:first td:last');
     target.click();
 
     // ensure event has been triggered
@@ -426,7 +423,7 @@ test('Selecting date from next month in december triggers changeMonth/changeYear
         triggeredM = 0,
         triggeredY = 0;
 
-    this.input.val('01-12-2011');
+    this.input.val('2011-12-01');
     this.dp.update();
 
     this.input.on('changeMonth', function(){
@@ -438,7 +435,7 @@ test('Selecting date from next month in december triggers changeMonth/changeYear
     });
 
     // find first day of previous month
-    target = this.picker.find('.datepicker-days tbody td:last');
+    target = this.picker.find('.datepicker-days tbody:first td:last');
     target.click();
 
     // ensure event has been triggered
@@ -450,7 +447,7 @@ test('Changing view mode triggers changeViewMode', function () {
   var viewMode = -1,
     triggered = 0;
 
-  this.input.val('22-07-2016');
+  this.input.val('2016-07-22');
   this.dp.update();
 
   this.input.on('changeViewMode', function (e) {
@@ -481,10 +478,9 @@ test('Changing view mode triggers changeViewMode', function () {
 });
 
 test('Clicking inside content of date with custom beforeShowDay content works', function(){
-    this.input = $('<input type="text" value="31-03-2011">')
+    this.input = $('<input type="text" value="2011-03-31">')
                     .appendTo('#qunit-fixture')
                     .datepicker({
-                        format: "dd-mm-yyyy",
                         beforeShowDay: function (date) { return { content: '<div><div>' + date.getDate() + '</div></div>' }; }
                     })
                     .focus(); // Activate for visibility checks

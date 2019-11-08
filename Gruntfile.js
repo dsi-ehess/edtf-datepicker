@@ -18,7 +18,7 @@ module.exports = function (grunt) {
 
         // Task configuration.
         browserify: {
-            development: {
+            original: {
                 src: [
                     "node_modules/edtf/index.js"
                 ],
@@ -27,11 +27,11 @@ module.exports = function (grunt) {
                     browserifyOptions: { standalone: 'edtf' },
                 }
             },
-            testing: {
+            optimized: {
                 src: [
                     "node_modules/browser-edtf/index.js"
                 ],
-                dest: './assets/test/edtf.js',
+                dest: './assets/js/edtf.opt.js',
                 options: {
                     browserifyOptions: { standalone: 'edtf' },
                     transform: [["babelify", {
@@ -219,7 +219,7 @@ module.exports = function (grunt) {
     require('time-grunt')(grunt);
 
     // JS distribution task.
-    grunt.registerTask('dist-js', ['concat', 'uglify:main', 'uglify:locales', 'usebanner:js', 'browserify:development']);
+    grunt.registerTask('dist-js', ['concat', 'uglify:main', 'uglify:locales', 'usebanner:js', 'browserify:original']);
 
     // CSS distribution task.
     grunt.registerTask('less-compile', 'less');
@@ -232,7 +232,7 @@ module.exports = function (grunt) {
     grunt.registerTask('lint-js', 'Lint all js files with jshint', ['jshint']);
     grunt.registerTask('lint-css', 'Lint all css files', ['dist-css', 'csslint:dist']);
     grunt.registerTask('qunit-all', 'Run qunit tests', ['qunit:main', 'qunit-timezone']);
-    grunt.registerTask('test', 'Lint files and run unit tests', ['lint-js', /*'lint-css',*/ 'browserify:testing', 'qunit-all']);
+    grunt.registerTask('test', 'Lint files and run unit tests', ['lint-js', /*'lint-css',*/ 'browserify:optimized', 'qunit-all']);
 
     // Version numbering task.
     // grunt bump-version --newver=X.Y.Z

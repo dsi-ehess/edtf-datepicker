@@ -9,4 +9,4 @@
 node_modules
 
 assets/js/edtf.js
-assets/test/edtf.js
+assets/js/edtf.opt.js

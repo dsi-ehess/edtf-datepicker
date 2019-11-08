@@ -219,8 +219,8 @@ test('date and viewDate must be between startDate and endDate when setStartDate 
 
 test('date and viewDate must be between startDate and endDate when setEndDate called', function() {
     this.dp.setDate(new Date(2013, 11, 1));
-    datesEqual(this.dp.dates[0], UTCDate(2013, 11, 1));
-    datesEqual(this.dp.viewDate, UTCDate(2013, 11, 1));
+    datesEqual(this.dp.dates[0], edtf('2013-12-01'));
+    datesEqual(this.dp.viewDate, edtf('2013-12-01'));
     this.dp.setEndDate(new Date(2013, 5, 6));
     datesEqual(this.dp.viewDate, UTCDate(2013, 5, 6));
     equal(this.dp.dates.length, 0);
@@ -266,9 +266,9 @@ test('Focused ceil for decade/century/millenium views', function(){
 
     picker.find('.datepicker-years thead th.datepicker-switch').click();
     target = picker.find('.datepicker-decades tbody .focused');
-    ok(target.text() === '2110', 'Decade cell is focused');
+    ok(target.text() === '211X', 'Decade cell is focused');
 
     picker.find('.datepicker-decades thead th.datepicker-switch').click();
     target = picker.find('.datepicker-centuries tbody .focused');
-    ok(target.text() === '2100', 'Century cell is focused');
+    ok(target.text() === '21XX', 'Century cell is focused');
 });
