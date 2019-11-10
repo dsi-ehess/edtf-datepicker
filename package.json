@@ -18,6 +18,7 @@
   "homepage": "https://github.com/dsi-ehess/edtf-datepicker",
   "author": "Sylvain Bigonneau <sylvain@monroe-labs.com>",
   "scripts": {
+    "test": "grunt test",
     "build": "grunt dist"
   },
   "repository": {
