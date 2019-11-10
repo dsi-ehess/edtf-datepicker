@@ -541,7 +541,7 @@
 		},
 
 		_utc_to_local: function (utc) {
-			if (!utc || !(utc instanceof Date) || utc.precision < 3) {
+			if (!utc || !(utc instanceof edtf.Date) || utc.precision < 3) {
 				return utc;
 			}
 
