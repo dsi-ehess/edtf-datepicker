@@ -1,8 +1,8 @@
 module('Methods', {
     setup: function(){
-        this.input = $('<input type="text" value="31-03-2011">')
+        this.input = $('<input type="text" value="2011-03-31">')
                         .appendTo('#qunit-fixture')
-                        .datepicker({format: "dd-mm-yyyy"});
+                        .datepicker();
         this.dp = this.input.data('datepicker');
         this.picker = this.dp.picker;
     },
@@ -30,8 +30,8 @@ test('hide', function(){
 });
 
 test('update - String', function(){
-    var returnedObject = this.dp.update('13-03-2012');
-    datesEqual(this.dp.dates[0], UTCDate(2012, 2, 13));
+    var returnedObject = this.dp.update('2012-03-13');
+    datesEqual(this.dp.dates[0], edtf('2012-03-13'));
     var date = this.dp.picker.find('.datepicker-days td:contains(13)');
     ok(date.hasClass('active'), 'Date is selected');
     strictEqual(returnedObject, this.dp, "is chainable");
@@ -39,7 +39,7 @@ test('update - String', function(){
 
 test('update - Date', function(){
     var returnedObject = this.dp.update(new Date(2012, 2, 13));
-    datesEqual(this.dp.dates[0], UTCDate(2012, 2, 13));
+    datesEqual(this.dp.dates[0], edtf(UTCDate(2012, 2, 13)));
     var date = this.dp.picker.find('.datepicker-days td:contains(13)');
     ok(date.hasClass('active'), 'Date is selected');
     strictEqual(returnedObject, this.dp, "is chainable");
@@ -47,7 +47,7 @@ test('update - Date', function(){
 
 test('update - Date with time', function(){
     var returnedObject = this.dp.update(new Date(2012, 2, 13, 23, 59, 59, 999));
-    datesEqual(this.dp.dates[0], UTCDate(2012, 2, 13, 23, 59, 59, 999));
+    datesEqual(this.dp.dates[0], edtf(UTCDate(2012, 2, 13, 23, 59, 59, 999)));
     var date = this.dp.picker.find('.datepicker-days td:contains(13)');
     ok(date.hasClass('active'), 'Date is selected');
     strictEqual(returnedObject, this.dp, "is chainable");
@@ -63,7 +63,7 @@ test('update - null', function(){
 
 test('setDate', function(){
     var date_in = new Date(2013, 1, 1),
-        expected_date = new Date(Date.UTC(2013, 1, 1)),
+        expected_date = edtf(new Date(Date.UTC(2013, 1, 1))),
         returnedObject;
 
     notEqual(this.dp.dates[0], date_in);
@@ -74,7 +74,7 @@ test('setDate', function(){
 
 test('setUTCDate', function(){
     var date_in = new Date(Date.UTC(2012, 3, 5)),
-        expected_date = date_in,
+        expected_date = edtf(date_in),
         returnedObject;
 
     notEqual(this.dp.dates[0], date_in);
@@ -85,7 +85,7 @@ test('setUTCDate', function(){
 
 test('setStartDate', function(){
     var date_in = new Date(2012, 3, 5),
-        expected_date = new Date(Date.UTC(2012, 3, 5)),
+        expected_date = edtf(new Date(Date.UTC(2012, 3, 5))),
         returnedObject = this.dp.setStartDate(date_in);
     // ...
     datesEqual(this.dp.o.startDate, expected_date);
@@ -94,7 +94,7 @@ test('setStartDate', function(){
 
 test('setEndDate', function(){
     var date_in = new Date(2012, 3, 5),
-        expected_date = new Date(Date.UTC(2012, 3, 5)),
+        expected_date = edtf(new Date(Date.UTC(2012, 3, 5))),
         returnedObject = this.dp.setEndDate(date_in);
     // ...
     datesEqual(this.dp.o.endDate, expected_date);
@@ -103,7 +103,7 @@ test('setEndDate', function(){
 
 test('getStartDate', function(){
     var date_in = new Date(2012, 3, 5),
-        expected_date = new Date(Date.UTC(2012, 3, 5)),
+        expected_date = edtf(new Date(Date.UTC(2012, 3, 5))),
         returnedObject = this.dp.setStartDate(date_in);
     // ...
     datesEqual(returnedObject.getStartDate(), expected_date);
@@ -112,7 +112,7 @@ test('getStartDate', function(){
 
 test('getEndDate', function(){
     var date_in = new Date(2012, 3, 5),
-        expected_date = new Date(Date.UTC(2012, 3, 5)),
+        expected_date = edtf(new Date(Date.UTC(2012, 3, 5))),
         returnedObject = this.dp.setEndDate(date_in);
     // ...
     datesEqual(returnedObject.getEndDate(), expected_date);
@@ -139,9 +139,9 @@ test('setDaysOfWeekDisabled - Array', function(){
 
 test('setDatesDisabled', function(){
     var monthShown = this.picker.find('.datepicker-days thead th.datepicker-switch');
-    var returnedObject = this.dp.setDatesDisabled(['01-03-2011']);
+    var returnedObject = this.dp.setDatesDisabled(['2011-03-01']);
     ok(this.picker.find('.datepicker-days tbody td.day:not(.old):first').hasClass('disabled'), 'day is disabled');
-    this.dp.setDatesDisabled(['01-01-2011']);
+    this.dp.setDatesDisabled(['2011-01-01']);
     equal(monthShown.text(), 'March 2011', 'should not change viewDate');
     strictEqual(returnedObject, this.dp, "is chainable");
 });
@@ -163,17 +163,17 @@ test('moveMonth - can handle invalid date', function(){
     var invalidDate = new Date("invalid"),
         returnedObject = this.dp.moveMonth(invalidDate, 1);
     // ...
-    equal(this.input.val(), "31-03-2011", "date is reset");
+    equal(this.input.val(), "2011-03-31", "date is reset");
 });
 
 test('parseDate - outputs correct value', function(){
-    var parsedDate = $.fn.datepicker.DPGlobal.parseDate('11/13/2015', $.fn.datepicker.DPGlobal.parseFormat('mm/dd/yyyy'), 'en');
+    var parsedDate = $.fn.datepicker.DPGlobal.parseDate('2015-11-13');
     equal(parsedDate.getUTCDate(), "13", "date is correct");
     equal(parsedDate.getUTCMonth(), "10", "month is correct");
     equal(parsedDate.getUTCFullYear(), "2015", "fullyear is correct");
 });
 
-test('parseDate - outputs correct value for yyyy\u5E74mm\u6708dd\u65E5 format', function(){
+/*test('parseDate - outputs correct value for yyyy\u5E74mm\u6708dd\u65E5 format', function(){
     var parsedDate = $.fn.datepicker.DPGlobal.parseDate('2015\u5E7411\u670813', $.fn.datepicker.DPGlobal.parseFormat('yyyy\u5E74mm\u6708dd\u65E5'), 'ja');
     equal(parsedDate.getUTCDate(), "13", "date is correct");
     equal(parsedDate.getUTCMonth(), "10", "month is correct");
@@ -185,7 +185,7 @@ test('parseDate - outputs correct value for dates containing unicodes', function
     equal(parsedDate.getUTCDate(), "13", "date is correct");
     equal(parsedDate.getUTCMonth(), "10", "month is correct");
     equal(parsedDate.getUTCFullYear(), "2015", "fullyear is correct");
-});
+});*/
 
 test('setDates - does not replace empty values', function () {
 	var html, comp;

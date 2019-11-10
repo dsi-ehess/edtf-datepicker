@@ -222,7 +222,7 @@ test('date and viewDate must be between startDate and endDate when setEndDate ca
     datesEqual(this.dp.dates[0], edtf('2013-12-01'));
     datesEqual(this.dp.viewDate, edtf('2013-12-01'));
     this.dp.setEndDate(new Date(2013, 5, 6));
-    datesEqual(this.dp.viewDate, UTCDate(2013, 5, 6));
+    datesEqual(this.dp.viewDate, edtf("2013-06-06"));
     equal(this.dp.dates.length, 0);
 });
 

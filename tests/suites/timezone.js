@@ -16,7 +16,7 @@ module('Component', {
 test('Check title with timezone', function(){
     var target;
 
-    this.dp.viewDate = UTCDate(2015, 7, 1);
+    this.dp.viewDate = edtf(UTCDate(2015, 7, 1));
     this.dp.fill();
 
     target = this.picker.find('.datepicker-days .datepicker-switch');

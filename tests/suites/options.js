@@ -1675,7 +1675,7 @@ test('Immediate Updates', function(){
     equal(input.val(), '3XXX');
 });
 
-test('forceParse: false on enter on invalid date', function () {
+/* test('forceParse: false on enter on invalid date', function () {
     var input = $('<input />')
                 .appendTo('#qunit-fixture')
                 .val('123456789')
@@ -1703,7 +1703,7 @@ test('forceParse: false on mousedown on invalid date', function () {
     });
 
     equal(input.val(), '123456789', 'date not parsed');
-});
+});*/
 
 //datepicker-dropdown
 
