@@ -1389,7 +1389,6 @@ test('endDate', function(){
                 .appendTo('#qunit-fixture')
                 .val('2012-10-26')
                 .datepicker({
-                    format: 'yyyy-mm-dd',
                     endDate: new Date(2012, 9, 26)
                 }),
         dp = input.data('datepicker'),
@@ -1410,7 +1409,6 @@ test('Multidate', function(){
                 .appendTo('#qunit-fixture')
                 .val('2012-03-05')
                 .datepicker({
-                    format: 'yyyy-mm-dd',
                     multidate: true
                 }),
         dp = input.data('datepicker'),
@@ -1420,15 +1418,15 @@ test('Multidate', function(){
     input.focus();
 
     // Initial value is selected
-    ok(dp.dates.contains(UTCDate(2012, 2, 5)) !== -1, '2012-03-05 (initial date) in dates');
+    ok(dp.dates.contains(edtf('2012-03-05')) !== -1, '2012-03-05 (initial date) in dates');
 
     // Select first
     target = picker.find('.datepicker-days tbody td:nth(7)');
     equal(target.text(), '4'); // Mar 4
 
     target.click();
-    datesEqual(dp.dates.get(-1), UTCDate(2012, 2, 4), '2012-03-04 in dates');
-    datesEqual(dp.viewDate, UTCDate(2012, 2, 4));
+    datesEqual(dp.dates.get(-1), edtf('2012-03-04'), '2012-03-04 in dates');
+    datesEqual(dp.viewDate, edtf('2012-03-04'));
     equal(input.val(), '2012-03-05,2012-03-04');
 
     // Select second
@@ -1436,8 +1434,8 @@ test('Multidate', function(){
     equal(target.text(), '12'); // Mar 12
 
     target.click();
-    datesEqual(dp.dates.get(-1), UTCDate(2012, 2, 12), '2012-03-12 in dates');
-    datesEqual(dp.viewDate, UTCDate(2012, 2, 12));
+    datesEqual(dp.dates.get(-1), edtf('2012-03-12'), '2012-03-12 in dates');
+    datesEqual(dp.viewDate, edtf('2012-03-12'));
     equal(input.val(), '2012-03-05,2012-03-04,2012-03-12');
 
     // Deselect first
@@ -1445,8 +1443,8 @@ test('Multidate', function(){
     equal(target.text(), '4'); // Mar 4
 
     target.click();
-    ok(dp.dates.contains(UTCDate(2012, 2, 4)) === -1, '2012-03-04 no longer in dates');
-    datesEqual(dp.viewDate, UTCDate(2012, 2, 4));
+    ok(dp.dates.contains(edtf('2012-03-04')) === -1, '2012-03-04 no longer in dates');
+    datesEqual(dp.viewDate, edtf('2012-03-04'));
     equal(input.val(), '2012-03-05,2012-03-12');
 });
 
@@ -1455,7 +1453,6 @@ test('Multidate with limit', function(){
                 .appendTo('#qunit-fixture')
                 .val('2012-03-05')
                 .datepicker({
-                    format: 'yyyy-mm-dd',
                     multidate: 2
                 }),
         dp = input.data('datepicker'),
@@ -1465,15 +1462,15 @@ test('Multidate with limit', function(){
     input.focus();
 
     // Initial value is selected
-    ok(dp.dates.contains(UTCDate(2012, 2, 5)) !== -1, '2012-03-05 (initial date) in dates');
+    ok(dp.dates.contains(edtf('2012-03-05')) !== -1, '2012-03-05 (initial date) in dates');
 
     // Select first
     target = picker.find('.datepicker-days tbody td:nth(7)');
     equal(target.text(), '4'); // Mar 4
 
     target.click();
-    datesEqual(dp.dates.get(-1), UTCDate(2012, 2, 4), '2012-03-04 in dates');
-    datesEqual(dp.viewDate, UTCDate(2012, 2, 4));
+    datesEqual(dp.dates.get(-1), edtf('2012-03-04'), '2012-03-04 in dates');
+    datesEqual(dp.viewDate, edtf('2012-03-04'));
     equal(input.val(), '2012-03-05,2012-03-04');
 
     // Select second
@@ -1481,8 +1478,8 @@ test('Multidate with limit', function(){
     equal(target.text(), '12'); // Mar 12
 
     target.click();
-    datesEqual(dp.dates.get(-1), UTCDate(2012, 2, 12), '2012-03-12 in dates');
-    datesEqual(dp.viewDate, UTCDate(2012, 2, 12));
+    datesEqual(dp.dates.get(-1), edtf('2012-03-12'), '2012-03-12 in dates');
+    datesEqual(dp.viewDate, edtf('2012-03-12'));
     equal(input.val(), '2012-03-04,2012-03-12');
 
     // Select third
@@ -1490,9 +1487,9 @@ test('Multidate with limit', function(){
     equal(target.text(), '17'); // Mar 17
 
     target.click();
-    datesEqual(dp.dates.get(-1), UTCDate(2012, 2, 17), '2012-03-17 in dates');
-    ok(dp.dates.contains(UTCDate(2012, 2, 4)) === -1, '2012-03-04 no longer in dates');
-    datesEqual(dp.viewDate, UTCDate(2012, 2, 17));
+    datesEqual(dp.dates.get(-1), edtf('2012-03-17'), '2012-03-17 in dates');
+    ok(dp.dates.contains(edtf('2012-03-04')) === -1, '2012-03-04 no longer in dates');
+    datesEqual(dp.viewDate, edtf('2012-03-17'));
     equal(input.val(), '2012-03-12,2012-03-17');
 });
 
@@ -1647,7 +1644,6 @@ test('Immediate Updates', function(){
                 .appendTo('#qunit-fixture')
                 .val('2014-01-01')
                 .datepicker({
-                    format: 'yyyy-mm-dd',
                     immediateUpdates: true
                 }),
         dp = input.data('datepicker'),
@@ -1656,27 +1652,27 @@ test('Immediate Updates', function(){
     // Change month
     input.focus();
     picker.find('.datepicker-days .next').click();
-    equal(input.val(), '2014-02-01');
+    equal(input.val(), '2014-02');
 
     // Change year
     picker.find('.datepicker-days .datepicker-switch').click();
     picker.find('.datepicker-months .next').click();
-    equal(input.val(), '2015-02-01');
+    equal(input.val(), '2015');
 
     // Change decade set (doesn't update input)
     picker.find('.datepicker-months .datepicker-switch').click();
     picker.find('.datepicker-years .next').click();
-    equal(input.val(), '2015-02-01');
+    equal(input.val(), '202X');
 
     // Change century set (doesn't update input)
     picker.find('.datepicker-years .datepicker-switch').click();
     picker.find('.datepicker-decades .next').click();
-    equal(input.val(), '2015-02-01');
+    equal(input.val(), '21XX');
 
     // Change millennium set (doesn't update input)
     picker.find('.datepicker-decades .datepicker-switch').click();
     picker.find('.datepicker-centuries .next').click();
-    equal(input.val(), '2015-02-01');
+    equal(input.val(), '3XXX');
 });
 
 test('forceParse: false on enter on invalid date', function () {
@@ -1804,7 +1800,7 @@ test('Title: with value', function(){
     equal(target.text(), 'Some Title');
 });
 
-test('i18n: Leverage i18n titleFormat when available.', patch_date(function(Date){
+/*test('i18n: Leverage i18n titleFormat when available.', patch_date(function(Date){
     var input = $('<input />')
                 .appendTo('#qunit-fixture')
                 .val('2015年04月21日')
@@ -1830,7 +1826,7 @@ test('i18n: Leverage English (default) i18n titleFormat when translation key for
 
     input.focus();
     equal(picker.find('.datepicker-days thead .datepicker-switch').text(), 'April 2015', 'Title is in default format: April 2015');
-}));
+}));*/
 
 test('Z-index Offset: none', function(){
     var input = $('<input />')
@@ -1923,12 +1919,11 @@ test('Nav arrow html templates .prev click', function () {
 test('Visibility of the prev and next arrows for year/decade/century/millenium views with startDate and endDate', function(){
     var input = $('<input />')
                 .appendTo('#qunit-fixture')
-                .val('01/01/2015')
+                .val('2015-01-01')
                 .datepicker({
-                    format: 'dd/mm/yyyy',
                     startView: 1,
-                    startDate: '01/12/2014',
-                    endDate: '01/12/2016'
+                    startDate: '2014-12-01',
+                    endDate: '2016-12-01'
                 }),
         dp = input.data('datepicker'),
         picker = dp.picker,
@@ -1963,11 +1958,10 @@ test('Visibility of the prev and next arrows for year/decade/century/millenium v
 test('Visibility of the prev arrow for month/year/decade/century/millenium views with startDate eq value', function(){
     var input = $('<input />')
                 .appendTo('#qunit-fixture')
-                .val('01/01/2014')
+                .val('2014-01-01')
                 .datepicker({
-                    format: 'dd/mm/yyyy',
                     startView: 0,
-                    startDate: '01/01/2014'
+                    startDate: '2014-01-01'
                 }),
         dp = input.data('datepicker'),
         picker = dp.picker,
@@ -1999,11 +1993,10 @@ test('Visibility of the prev arrow for month/year/decade/century/millenium views
 test('Visibility of the next arrow for month/year/decade/century/millenium views with endDate eq value', function(){
     var input = $('<input />')
                 .appendTo('#qunit-fixture')
-                .val('31/12/1999')
+                .val('1999-12-31')
                 .datepicker({
-                    format: 'dd/mm/yyyy',
                     startView: 0,
-                    endDate: '31/12/1999'
+                    endDate: '1999-12-31'
                 }),
         dp = input.data('datepicker'),
         picker = dp.picker,
@@ -2050,7 +2043,6 @@ test('keepEmptyValues: none (default is false)', function() {
         input_from = $('<input />').val('2016-04-01').appendTo('#qunit-fixture'),
         input_to = $('<input />').appendTo('#qunit-fixture'),
         dp = proxy_element.datepicker({
-            format: 'yyyy-mm-dd',
             inputs: [input_from, input_to]
         }),
         input_from_dp = input_from.data('datepicker');
@@ -2067,7 +2059,6 @@ test('keepEmptyValues: true', function() {
         input_from = $('<input />').val('2016-04-01').appendTo('#qunit-fixture'),
         input_to = $('<input />').appendTo('#qunit-fixture'),
         dp = proxy_element.datepicker({
-            format: 'yyyy-mm-dd',
             inputs: [input_from, input_to],
             keepEmptyValues: true
         }),
