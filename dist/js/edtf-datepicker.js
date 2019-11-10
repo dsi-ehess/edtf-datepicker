@@ -53,6 +53,8 @@
 				for (var i = 0, l = this.length; i < l; i++) {
 					// Use date arithmetic to allow dates with different times to match
 					var curDate = edtf(this[i]);
+					if (!curDate.precision)
+						curDate.precision = 3;
 					if (curDate.edtf === d.edtf)
 						return i;
 				}
@@ -530,7 +532,7 @@
 		},
 
 		_utc_to_local: function (utc) {
-			if (!utc || !(utc instanceof Date) || utc.precision < 3) {
+			if (!utc || !(utc instanceof edtf.Date || utc instanceof Date) || utc.precision < 3) {
 				return utc;
 			}
 
@@ -546,7 +548,7 @@
 			return local;
 		},
 		_local_to_utc: function (local) {
-			if (!local || !(local instanceof Date) || local.precision < 3) {
+			if (!local || !(local instanceof Date || local instanceof edtf.Date) || (local.precision && local.precision < 3)) {
 				return local;
 			}
 			return edtf(new Date(local.getTime() - (local.getTimezoneOffset() * 60000)));
@@ -764,7 +766,7 @@
 				fromArgs = false;
 			if (arguments.length) {
 				$.each(arguments, $.proxy(function (i, date) {
-					if (date instanceof Date) {
+					if (date instanceof Date || date instanceof edtf.Date) {
 						var precision = date.precision;
 						date = this._local_to_utc(date);
 						date.precision = precision;
@@ -892,7 +894,7 @@
 			if (this.dateIsDisabled(date)) {
 				cls.push('disabled', 'disabled-date');
 			}
-			if ($.inArray(date.day, this.o.daysOfWeekHighlighted) !== -1) {
+			if ($.inArray(date.getUTCDay(), this.o.daysOfWeekHighlighted) !== -1) {
 				cls.push('highlighted');
 			}
 			if (this.range) {
@@ -1907,6 +1909,10 @@
 			return { separators: separators, parts: parts };
 		},
 		parseDate: function (date) {
+			if (!date)
+				return undefined;
+			if (date instanceof edtf.Date)
+				return date;
 			try {
 				return edtf(date);
 			} catch (error) {
