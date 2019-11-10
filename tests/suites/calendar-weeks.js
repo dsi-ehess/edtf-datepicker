@@ -4,7 +4,6 @@ module('Calendar Weeks', {
             .appendTo('#qunit-fixture')
             .val('2013-01-14')
             .datepicker({
-                format: 'yyyy-mm-dd',
                 calendarWeeks: true
             })
             .focus(); // Activate for visibility checks
@@ -22,7 +21,7 @@ test('adds cw header column', function(){
 });
 
 test('adds calendar week cells to each day row', function(){
-    var target = this.picker.find('.datepicker-days tbody tr');
+    var target = this.picker.find('.datepicker-days tbody:first tr');
 
     expect(target.length);
     target.each(function(i){
@@ -32,7 +31,7 @@ test('adds calendar week cells to each day row', function(){
 });
 
 test('displays correct calendar week', function(){
-    var target = this.picker.find('.datepicker-days tbody tr');
+    var target = this.picker.find('.datepicker-days tbody:first tr');
 
     expect(target.length);
     target.each(function(i){

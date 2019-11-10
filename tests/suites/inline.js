@@ -1,8 +1,8 @@
 module('Inline', {
     setup: function(){
-        this.component = $('<div data-date="12-02-2012"></div>')
+        this.component = $('<div data-date="2012-02-12"></div>')
                         .appendTo('#qunit-fixture')
-                        .datepicker({format: "dd-mm-yyyy"});
+                        .datepicker();
         this.dp = this.component.data('datepicker');
         this.picker = this.dp.picker;
     },
@@ -13,8 +13,8 @@ module('Inline', {
 
 
 test('Picker gets date/viewDate from data-date attr', function(){
-    datesEqual(this.dp.dates[0], UTCDate(2012, 1, 12));
-    datesEqual(this.dp.viewDate, UTCDate(2012, 1, 12));
+    datesEqual(this.dp.dates[0], edtf("2012-02-12"));
+    datesEqual(this.dp.viewDate, edtf("2012-02-12"));
 });
 
 
@@ -23,6 +23,6 @@ test('Visible after init', function(){
 });
 
 test('update', function(){
-    this.dp.update('13-03-2012');
-    datesEqual(this.dp.dates[0], UTCDate(2012, 2, 13));
+    this.dp.update('2012-03-13');
+    datesEqual(this.dp.dates[0], edtf("2012-03-13"));
 });

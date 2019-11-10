@@ -2089,7 +2089,7 @@ test('maxViewMode and navigation switch', function(){
 test('updateViewDate', function() {
     expect(8);
 
-    var input = $('<input value="08/03/1990"/>')
+    var input = $('<input value="1990-03-08"/>')
                 .appendTo('#qunit-fixture')
                 .datepicker({
                   defaultViewDate: {
