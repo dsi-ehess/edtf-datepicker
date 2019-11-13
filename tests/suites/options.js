@@ -683,7 +683,7 @@ test('Today Highlight: today\'s date is not highlighted by default', patch_date(
 
     input.focus();
     ok(picker.find('.datepicker-days').is(':visible'), 'Days view visible');
-    equal(picker.find('.datepicker-days thead .datepicker-switch').text(), 'March 2012', 'Title is "March 2012"');
+    equal(picker.find('.datepicker-days thead .datepicker-switch').text(), '2012-03', 'Title is "2012-03"');
 
     target = picker.find('.datepicker-days tbody td:contains(15)');
     ok(!target.hasClass('today'), 'Today is not marked with "today" class');
@@ -710,7 +710,7 @@ test('Today Highlight: today\'s date is highlighted when not active', patch_date
 
     input.focus();
     ok(picker.find('.datepicker-days').is(':visible'), 'Days view visible');
-    equal(picker.find('.datepicker-days thead .datepicker-switch').text(), 'March 2012', 'Title is "March 2012"');
+    equal(picker.find('.datepicker-days thead .datepicker-switch').text(), '2012-03', 'Title is "2012-03"');
 
     target = picker.find('.datepicker-days tbody td:contains(15)');
     ok(target.hasClass('today'), 'Today is marked with "today" class');
@@ -1604,7 +1604,7 @@ test('Default View Date (Object)', function(){
 
     input.focus();
 
-    equal(picker.find('.datepicker-days thead .datepicker-switch').text(), 'May 1977');
+    equal(picker.find('.datepicker-days thead .datepicker-switch').text(), '1977-05');
 });
 
 test('Default View Date (Date)', function(){
@@ -1620,7 +1620,7 @@ test('Default View Date (Date)', function(){
 
     input.focus();
 
-    equal(picker.find('.datepicker-days thead .datepicker-switch').text(), 'May 1977');
+    equal(picker.find('.datepicker-days thead .datepicker-switch').text(), '1977-05');
 });
 
 test('Default View Date (String)', function(){
@@ -1636,7 +1636,7 @@ test('Default View Date (String)', function(){
 
     input.focus();
 
-    equal(picker.find('.datepicker-days thead .datepicker-switch').text(), 'May 1977');
+    equal(picker.find('.datepicker-days thead .datepicker-switch').text(), '1977-05');
 });
 
 test('Immediate Updates', function(){
@@ -2113,20 +2113,20 @@ test('updateViewDate', function() {
         shouldTriggerChangeYear = false,
         monthShown = picker.find('.datepicker-days thead th.datepicker-switch');
 
-    equal(monthShown.text(), "May 1945", 'uses defaultViewDate on initialization');
+    equal(monthShown.text(), "1945-05", 'uses defaultViewDate on initialization');
     input.datepicker('setDate', new Date(1945, 8, 2));
-    equal(monthShown.text(), "May 1945", 'does not change viewDate on `setDate` method');
+    equal(monthShown.text(), "1945-05", 'does not change viewDate on `setDate` method');
     input.focus();
     picker.find('.datepicker-days tbody tr td.day.new:first').click();
-    equal(monthShown.text(), "May 1945", 'does not change viewDate if a day in next month is selected');
+    equal(monthShown.text(), "1945-05", 'does not change viewDate if a day in next month is selected');
     shouldTriggerChangeMonth = true;
     picker.find('.datepicker-days thead th.next').click();
-    equal(monthShown.text(), 'June 1945', 'changing month must still be possible'); // and must trigger `changeMonth` event
+    equal(monthShown.text(), '1945-06', 'changing month must still be possible'); // and must trigger `changeMonth` event
     shouldTriggerChangeYear = true;
     picker.find('.datepicker-days thead th.datepicker-switch').click();
     picker.find('.datepicker-months thead th.next').click();
     picker.find('.datepicker-months tbody .month:first').click();
-    equal(monthShown.text(), 'January 1946', 'changing year must still be possible'); // and must trigger `changeYear` and `changeMonth` events
+    equal(monthShown.text(), '1946-01', 'changing year must still be possible'); // and must trigger `changeYear` and `changeMonth` events
 });
 test('Week Days: Week days default visibility (or enabled)', function(){
     var input = $('<input />')

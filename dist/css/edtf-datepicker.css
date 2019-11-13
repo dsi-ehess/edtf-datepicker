@@ -437,6 +437,64 @@
 .datepicker tfoot .statuses table {
   width: 100%;
 }
+.datepicker tfoot .unspecified-cells:hover,
+.datepicker tfoot .unspecified-cells th:hover {
+  background: transparent;
+}
+.datepicker tfoot .unspecified-cells th span {
+  display: block;
+  float: left;
+  cursor: pointer;
+  border-radius: 4px;
+  width: 23%;
+}
+.datepicker tfoot .unspecified-cells th span:hover,
+.datepicker tfoot .unspecified-cells th span.focused {
+  background: #eee;
+}
+.datepicker tfoot .unspecified-cells th span.day {
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  margin: 0 2.5%;
+}
+.datepicker tfoot .unspecified-cells th span.month {
+  margin: 0 5.1%;
+  height: 54px;
+  line-height: 54px;
+}
+.datepicker tfoot .unspecified-cells th span.year {
+  margin: 0 38.5%;
+  height: 54px;
+  line-height: 54px;
+}
+.datepicker tfoot .unspecified-cells th span.active {
+  background-color: #006dcc;
+  background-image: -moz-linear-gradient(to bottom, #08c, #0044cc);
+  background-image: -ms-linear-gradient(to bottom, #08c, #0044cc);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#08c), to(#0044cc));
+  background-image: -webkit-linear-gradient(to bottom, #08c, #0044cc);
+  background-image: -o-linear-gradient(to bottom, #08c, #0044cc);
+  background-image: linear-gradient(to bottom, #08c, #0044cc);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#08c', endColorstr='#0044cc', GradientType=0);
+  border-color: #0044cc #0044cc #002a80;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+  color: #fff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.datepicker tfoot .unspecified-cells th span.active:hover,
+.datepicker tfoot .unspecified-cells th span.active:active,
+.datepicker tfoot .unspecified-cells th span.active.active,
+.datepicker tfoot .unspecified-cells th span.active.disabled,
+.datepicker tfoot .unspecified-cells th span.active[disabled] {
+  background-color: #0044cc;
+}
+.datepicker tfoot .unspecified-cells th span.active:active,
+.datepicker tfoot .unspecified-cells th span.active.active {
+  background-color: #003399 \9;
+}
 .datepicker .prev.disabled,
 .datepicker .next.disabled {
   visibility: hidden;

@@ -954,6 +954,51 @@
 			this.picker.find(selector + ' tfoot .statuses').html(html);
 		},
 
+		_fill_unspecified_cells: function (selector, d) {
+			var html = '',
+				dCopy = edtf(d.edtf);
+
+			if (!(d instanceof edtf.Year)) {
+				switch (selector) {
+					case '.datepicker-centuries':
+						dCopy.precision = 1;
+						dCopy.unspecified.value = edtf.Bitmask.Y - 1;
+						html = '<th colspan="7"><span class="year unspecified ' + (this.dates.contains(dCopy) !== -1 ? 'active' : '') + '">' + dCopy.edtf + '</span></th>';
+						break;
+					case '.datepicker-decades':
+						dCopy.precision = 1;
+						dCopy.unspecified.value = edtf.Bitmask.YYXX;
+						html = '<th colspan="7"><span class="year unspecified ' + (this.dates.contains(dCopy) !== -1 ? 'active' : '') + '">' + dCopy.edtf + '</span></th>';
+						break;
+					case '.datepicker-years':
+						dCopy.precision = 1;
+						dCopy.unspecified.value = edtf.Bitmask.YYYX;
+						html = '<th colspan="7"><span class="year unspecified ' + (this.dates.contains(dCopy) !== -1 ? 'active' : '') + '">' + dCopy.edtf + '</span></th>';
+						break;
+					case '.datepicker-months':
+						html = '<th colspan="7">' +
+							'<span class="month unspecified">XX</span>' +
+							'<span class="month unspecified">0X</span>' +
+							'<span class="month unspecified">1X</span>' +
+							'</th>';
+						break;
+					default:
+						dCopy.approximate.value = 0;
+						dCopy.uncertain.value = 0;
+						dCopy.precision = 2;
+						html = '<th colspan="7">' +
+							'<span class="day unspecified" data-date="' + dCopy.edtf + '-XX">XX</span>' +
+							'<span class="day unspecified" data-date="' + dCopy.edtf + '-0X">0X</span>' +
+							'<span class="day unspecified" data-date="' + dCopy.edtf + '-1X">1X</span>' +
+							'<span class="day unspecified" data-date="' + dCopy.edtf + '-2X">2X</span>' +
+							(dCopy.month !== 1 ? '<span class="day unspecified" data-date="' + dCopy.edtf + '-3X">3X</span>' : '') +
+							'</th>';
+						break;
+				}
+			}
+			this.picker.find(selector + ' tfoot .unspecified-cells').html(html);
+		},
+
 		_fill_yearsView: function (selector, cssClass, factor, year, startYear, endYear, beforeFn) {
 			var html = '';
 			var step = factor / 10;
@@ -962,6 +1007,8 @@
 			var endVal = startVal + step * 9;
 			var focusedVal = Math.floor(this.viewDate.year / step) * step;
 			var selected = $.map(this.dates, function (d) {
+				if (d.unspecified.is('year'))
+					return null;
 				return Math.floor(d.year / step) * step;
 			});
 
@@ -1019,13 +1066,13 @@
 				html += '<span class="' + classes.join(' ') + '"' + (tooltip ? ' title="' + tooltip + '"' : '') + '>' + valLabel + '</span>';
 			}
 
-			view.find('.datepicker-switch').text(startVal + ' - ' + endVal);
 			view.find('td').html(html);
 		},
 
 		// fills up the datepicker
 		fill: function () {
 			var d = edtf(this.viewDate),
+				titleDate = edtf(this.viewDate),
 				year = d.year,
 				month = d instanceof edtf.Year ? 0 : d.month,
 				startYear = this.o.startDate !== -Infinity ? this.o.startDate.getUTCFullYear() : -Infinity,
@@ -1044,9 +1091,10 @@
 				return;
 			if (d instanceof edtf.Date) {
 				specifiedMonth = !d.unspecified.is('month') && !d.unspecified.is('year');
-				this.picker.find('.datepicker-days .datepicker-switch')
-					.text(DPGlobal.formatDate(d, 'MM yyyy', this.o.language));
+				titleDate.precision = titleDate.precision === 1 ? 1 : 2;
 			}
+			this.picker.find('.datepicker-switch')
+			.text(titleDate.edtf);
 			this.picker.find('tfoot .today')
 				.text(todaytxt)
 				.css('display', titleBtnVisible ? 'table-cell' : 'none');
@@ -1136,7 +1184,7 @@
 				} else {
 					var dateCpy = edtf(d);
 					dateCpy.precision = 3;
-					for (var dayIndex = 0; dayIndex < (month === 1 ? 28 : 31); dayIndex++) {
+					for (var dayIndex = 0; dayIndex < (month === 1 ? 29 : 31); dayIndex++) {
 						if (dayIndex % 7 === 0) {
 							html.push('<tr>');
 						}
@@ -1160,13 +1208,10 @@
 					}
 				}
 
-				this.picker.find('.datepicker-days tbody').html(html.join(''));
+				this.picker.find('.datepicker-days tbody:first').html(html.join(''));
 
 				var monthsTitle = dates[this.o.language].monthsTitle || dates['en'].monthsTitle || 'Months';
 				var months = this.picker.find('.datepicker-months')
-					.find('.datepicker-switch')
-					.text(this.o.maxViewMode < 2 ? monthsTitle : year)
-					.end()
 					.find('tbody span').removeClass('active');
 
 				$.each(this.dates, function (i, d) {
@@ -1216,10 +1261,14 @@
 				endYear,
 				this.o.beforeShowYear
 			);
-
-			this._fill_status_table('.datepicker-days', d);
-			this._fill_status_table('.datepicker-months', d);
-			this._fill_status_table('.datepicker-years', d);
+			
+			if (!d.unspecified.value) {
+				this._fill_status_table('.datepicker-days', d);
+				this._fill_status_table('.datepicker-months', d);
+				this._fill_status_table('.datepicker-years', d);	
+			} else {
+				this.picker.find('tfoot .statuses').html('');
+			}
 
 			// Generating century/decades picker
 			this._fill_yearsView(
@@ -1241,6 +1290,13 @@
 				endYear,
 				this.o.beforeShowCentury
 			);
+
+			this._fill_unspecified_cells('.datepicker-days', d);
+			this._fill_unspecified_cells('.datepicker-months', d);
+			this._fill_unspecified_cells('.datepicker-years', d);
+			this._fill_unspecified_cells('.datepicker-decades', d);
+			this._fill_unspecified_cells('.datepicker-centuries', d);
+
 		},
 
 		updateNavArrows: function () {
@@ -1273,8 +1329,8 @@
 					nextIsDisabled = Math.floor(year / factor) * factor + factor > endYear;
 					break;
 				case 0:
-					prevIsDisabled = year <= startYear && month <= startMonth;
-					nextIsDisabled = year >= endYear && month >= endMonth;
+					prevIsDisabled = (year <= startYear && month <= startMonth) || !!(d.unspecified.month);
+					nextIsDisabled = (year >= endYear && month >= endMonth) || !!(d.unspecified.month);
 					break;
 			}
 
@@ -1291,6 +1347,24 @@
 
 			// Clicked on the switch
 			if (target.hasClass('datepicker-switch') && this.viewMode !== this.o.maxViewMode) {
+				switch (this.viewMode) {
+					case 3:
+						this.viewDate.unspecified.value -= this.viewDate.unspecified.is('year');
+						this.viewDate.unspecified.add(edtf.Bitmask.Y - 1);
+						break;
+					case 2:
+						this.viewDate.unspecified.value -= this.viewDate.unspecified.is('year');
+						this.viewDate.unspecified.add(edtf.Bitmask.YYXX);						
+						break;
+					case 1:
+						this.viewDate.unspecified.value -= this.viewDate.unspecified.is('year');
+						this.viewDate.unspecified.add(edtf.Bitmask.YYYX);
+						break;
+					default:
+						this.viewDate.precision = 1;
+						break;
+				}
+				this._setDate(this.viewDate);
 				this.setViewMode(this.viewMode + 1);
 			}
 
@@ -1335,7 +1409,13 @@
 						|| this.viewDate.significant
 						|| (this.viewDate.unspecified && this.viewDate.unspecified.value)) {
 						if (this.viewMode === 1) {
-							month = target.parent().find('span').index(target);
+							this.viewDate.unspecified.value -= this.viewDate.unspecified.month;
+							if (target.hasClass('unspecified')) {
+								month = target.text() === '1X' ? 9 : 0;
+								this.viewDate.unspecified.add(target.text() === 'XX' ? edtf.Bitmask.M : edtf.Bitmask.MX);
+							} else {
+								month = target.parent().find('span').index(target);
+							}
 							year = this.viewDate.getUTCFullYear();
 							this.viewDate.setUTCMonth(month);
 							this.viewDate.precision = 2;
@@ -1354,7 +1434,8 @@
 								this.viewDate = edtf(sign + ('0000' + yearText).slice(-4));
 							}
 						}
-
+						if (target.hasClass('year'))
+							this.viewMode = 2;
 						this._trigger(DPGlobal.viewModes[this.viewMode - 1].e, this.viewDate);
 					}
 
@@ -1397,19 +1478,38 @@
 			var $target = $(e.currentTarget);
 			var dir = $target.hasClass('prev') ? -1 : 1;
 			if (this.viewMode !== 0) {
-				dir *= DPGlobal.viewModes[this.viewMode].navStep * 12;
+				var factor = 1;
+				if (this.viewMode === 1) {
+					switch (this.viewDate.unspecified.year) {
+						case edtf.Bitmask.YYYX:
+							factor = 10;
+							break;
+						case edtf.Bitmask.YYYX:
+							factor = 100;
+							break;
+						case edtf.Bitmask.Y - 1:
+							factor = 1000;
+							break;
+						default:
+							break;
+					}
+				}
+				dir *= DPGlobal.viewModes[this.viewMode].navStep * 12 * factor;
 			}
 			var newDate = this.moveMonth(this.viewDate, dir);
 			switch (this.viewMode) {
 				case 2:
-					newDate.unspecified.value = 8;
+					newDate.unspecified.value = edtf.Bitmask.YYYX;
 					break;
 				case 3:
-					newDate.unspecified.value = 12;
+					newDate.unspecified.value = edtf.Bitmask.YYXX;
 					break;
 				case 4:
-					newDate.unspecified.value = 14;
+					newDate.unspecified.value = edtf.Bitmask.Y - 1;
 					break;
+				default:
+					newDate.unspecified.value = this.viewDate.unspecified.value;
+					break;			
 			}
 			if (newDate.year > 9999 || newDate.year < -9999)
 				newDate = edtf('Y' + newDate.year + (this.viewMode - 1 ? 'S' + (this.viewMode - 1) : ''));
@@ -1963,6 +2063,8 @@
 			'</thead>',
 		contTemplate: '<tbody><tr><td colspan="7"></td></tr></tbody>',
 		footTemplate: '<tfoot>' +
+			'<tr class="unspecified-cells">' +
+			'</tr>' +
 			'<tr>' +
 			'<th colspan="7" class="statuses"></th>' +
 			'</tr>' +

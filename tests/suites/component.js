@@ -123,9 +123,9 @@ test('Navigating to/from decade view', function(){
     target.click();
     ok(this.picker.find('.datepicker-months').is(':visible'), 'Month picker is visible');
     equal(this.dp.viewMode, 1);
-    // Not modified when switching modes
-    datesEqual(this.dp.viewDate, edtf('2012-03-31'));
-    datesEqual(this.dp.dates[0], edtf('2012-03-31'));
+    // Modified when switching modes
+    equal(this.dp.viewDate.edtf, '2012');
+    equal(this.dp.dates[0].edtf, '2012');
 
     target = this.picker.find('.datepicker-months thead th.datepicker-switch');
     ok(target.is(':visible'), 'View switcher is visible');
@@ -133,9 +133,9 @@ test('Navigating to/from decade view', function(){
     target.click();
     ok(this.picker.find('.datepicker-years').is(':visible'), 'Year picker is visible');
     equal(this.dp.viewMode, 2);
-    // Not modified when switching modes
-    datesEqual(this.dp.viewDate, edtf('2012-03-31'));
-    datesEqual(this.dp.dates[0], edtf('2012-03-31'));
+    // Modified when switching modes
+    equal(this.dp.viewDate.edtf, '201X');
+    equal(this.dp.dates[0].edtf, '201X');
 
     // Change years to test internal state changes
     target = this.picker.find('.datepicker-years tbody span:contains(2011)');

@@ -646,6 +646,93 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
 .datepicker tfoot tr th:hover {
   background: #eeeeee;
 }
+.datepicker tfoot .statuses {
+  font-size: 0.9em;
+}
+.datepicker tfoot .statuses:hover,
+.datepicker tfoot .statuses th:hover {
+  background: transparent;
+}
+.datepicker tfoot .statuses table {
+  width: 100%;
+}
+.datepicker tfoot .unspecified-cells:hover,
+.datepicker tfoot .unspecified-cells th:hover {
+  background: transparent;
+}
+.datepicker tfoot .unspecified-cells th span {
+  display: block;
+  float: left;
+  cursor: pointer;
+  border-radius: 4px;
+  width: 23%;
+}
+.datepicker tfoot .unspecified-cells th span:hover,
+.datepicker tfoot .unspecified-cells th span.focused {
+  background: #eeeeee;
+}
+.datepicker tfoot .unspecified-cells th span.day {
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  margin: 0 2.5%;
+}
+.datepicker tfoot .unspecified-cells th span.month {
+  margin: 0 5.1%;
+  height: 54px;
+  line-height: 54px;
+}
+.datepicker tfoot .unspecified-cells th span.year {
+  margin: 0 38.5%;
+  width: 23%;
+  height: 54px;
+  line-height: 54px;
+}
+.datepicker tfoot .unspecified-cells th span.active {
+  color: #fff;
+  background-color: #337ab7;
+  border-color: #2e6da4;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.datepicker tfoot .unspecified-cells th span.active:focus,
+.datepicker tfoot .unspecified-cells th span.active.focus {
+  color: #fff;
+  background-color: #286090;
+  border-color: #122b40;
+}
+.datepicker tfoot .unspecified-cells th span.active:hover {
+  color: #fff;
+  background-color: #286090;
+  border-color: #204d74;
+}
+.datepicker tfoot .unspecified-cells th span.active:active,
+.datepicker tfoot .unspecified-cells th span.active.active {
+  color: #fff;
+  background-color: #286090;
+  border-color: #204d74;
+}
+.datepicker tfoot .unspecified-cells th span.active:active:hover,
+.datepicker tfoot .unspecified-cells th span.active.active:hover,
+.datepicker tfoot .unspecified-cells th span.active:active:focus,
+.datepicker tfoot .unspecified-cells th span.active.active:focus,
+.datepicker tfoot .unspecified-cells th span.active:active.focus,
+.datepicker tfoot .unspecified-cells th span.active.active.focus {
+  color: #fff;
+  background-color: #204d74;
+  border-color: #122b40;
+}
+.datepicker tfoot .unspecified-cells th span.active.disabled:hover,
+.datepicker tfoot .unspecified-cells th span.active[disabled]:hover,
+fieldset[disabled] .datepicker tfoot .unspecified-cells th span.active:hover,
+.datepicker tfoot .unspecified-cells th span.active.disabled:focus,
+.datepicker tfoot .unspecified-cells th span.active[disabled]:focus,
+fieldset[disabled] .datepicker tfoot .unspecified-cells th span.active:focus,
+.datepicker tfoot .unspecified-cells th span.active.disabled.focus,
+.datepicker tfoot .unspecified-cells th span.active[disabled].focus,
+fieldset[disabled] .datepicker tfoot .unspecified-cells th span.active.focus {
+  background-color: #337ab7;
+  border-color: #2e6da4;
+}
 .datepicker .prev.disabled,
 .datepicker .next.disabled {
   visibility: hidden;
