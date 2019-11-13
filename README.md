@@ -11,7 +11,7 @@ It also has a strict depency on [EDTF.js](https://github.com/inukshuk/edtf.js), 
 
 - [Bootstrap](https://github.com/twbs/bootstrap) 2.0.4+
 - [jQuery](https://github.com/jquery/jquery) 1.7.1+
-- [EDTF.js](https://github.com/inukshuk/edtf.js) 2.7.0+
+- [EDTF.js](https://github.com/inukshuk/edtf.js) 2.7.1+
 
 ## Development
 

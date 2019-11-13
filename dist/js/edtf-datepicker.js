@@ -1090,7 +1090,7 @@
 			if (isNaN(year) || isNaN(month))
 				return;
 			if (d instanceof edtf.Date) {
-				specifiedMonth = !d.unspecified.is('month') && !d.unspecified.is('year');
+				specifiedMonth = !d.unspecified.month && !d.unspecified.year;
 				titleDate.precision = titleDate.precision === 1 ? 1 : 2;
 			}
 			this.picker.find('.datepicker-switch')
@@ -1183,24 +1183,13 @@
 					}
 				} else {
 					var dateCpy = edtf(d);
-					dateCpy.precision = 3;
+					dateCpy.precision = 2;
 					for (var dayIndex = 0; dayIndex < (month === 1 ? 29 : 31); dayIndex++) {
 						if (dayIndex % 7 === 0) {
 							html.push('<tr>');
 						}
-						dateCpy.setDate(dayIndex + 1);
-						clsName = this.getClassNames(dateCpy);
-						clsName.push('day');
 
-						//Check if uniqueSort exists (supported by jquery >=1.12 and >=2.2)
-						//Fallback to unique function for older jquery versions
-						if ($.isFunction($.uniqueSort)) {
-							clsName = $.uniqueSort(clsName);
-						} else {
-							clsName = $.unique(clsName);
-						}
-
-						html.push('<td class="' + clsName.join(' ') + '"' + (tooltip ? ' title="' + tooltip + '"' : '') + ' data-date="' + dateCpy.edtf + '">' + (dayIndex + 1) + '</td>');
+						html.push('<td class="day"' + (tooltip ? ' title="' + tooltip + '"' : '') + ' data-date="' + dateCpy.edtf + '-' + ('00' + (dayIndex + 1)).slice(-2) + '">' + (dayIndex + 1) + '</td>');
 						tooltip = null;
 						if (dayIndex % 7 === 6) {
 							html.push('</tr>');
@@ -1210,7 +1199,6 @@
 
 				this.picker.find('.datepicker-days tbody:first').html(html.join(''));
 
-				var monthsTitle = dates[this.o.language].monthsTitle || dates['en'].monthsTitle || 'Months';
 				var months = this.picker.find('.datepicker-months')
 					.find('tbody span').removeClass('active');
 
