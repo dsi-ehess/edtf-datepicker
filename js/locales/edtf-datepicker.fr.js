@@ -1,6 +1,7 @@
 /**
  * French translation for edtf-datepicker
  * Nico Mollet <nico.mollet@gmail.com>
+ * Sylvain Bigonneau <sylvain@monroe-labs.com>
  */
 ;(function($){
 	$.fn.datepicker.dates['fr'] = {
@@ -13,6 +14,11 @@
 		monthsTitle: "Mois",
 		clear: "Effacer",
 		weekStart: 1,
-		format: "dd/mm/yyyy"
+		format: "dd/mm/yyyy",
+		approximate: "Approximatif",
+		uncertain: "Incertain",
+		day: "Jour",
+		month: "Mois",
+		year: "Année"
 	};
 }(jQuery));

@@ -1,6 +1,7 @@
 /**
  * French (Switzerland) translation for edtf-datepicker
  * Christoph Jossi <c.jossi@ascami.ch>
+ * Sylvain Bigonneau <sylvain@monroe-labs.com>
  * Based on 
  * French translation for edtf-datepicker
  * Nico Mollet <nico.mollet@gmail.com>
@@ -16,6 +17,11 @@
 		monthsTitle: "Mois",
 		clear: "Effacer",
 		weekStart: 1,
-		format: "dd.mm.yyyy"
+		format: "dd.mm.yyyy",
+		approximate: "Approximatif",
+		uncertain: "Incertain",
+		day: "Jour",
+		month: "Mois",
+		year: "Année"
 	};
 }(jQuery));

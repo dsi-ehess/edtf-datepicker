@@ -921,29 +921,29 @@
 					'<thead>' +
 					'<tr>' +
 					'<th></th>' +
-					'<th>Approximate</th>' +
-					'<th>Uncertain</th>' +
+					'<th>' + (dates[this.o.language].approximate || 'Approximate') + '</th>' +
+					'<th>' + (dates[this.o.language].uncertain || 'Uncertain') + '</th>' +
 					'</tr>' +
 					'</thead>' +
 					'<tbody>';
 				switch (d.precision) {
 					case 3:
 						html += '<tr>' +
-							'<td>Day</td>' +
+							'<td>' + (dates[this.o.language].day || 'Day') + '</td>' +
 							'<td><input type="checkbox" class="dateStatus" name="approximate" value="day" ' + (d.approximate.is('day') ? 'checked' : '') + '/></td>' +
 							'<td><input type="checkbox" class="dateStatus" name="uncertain" value="day" ' + (d.uncertain.is('day') ? 'checked' : '') + '/></td>' +
 							'</tr>';
 					/* falls through */
 					case 2:
 						html += '<tr>' +
-							'<td>Month</td>' +
+							'<td>' + (dates[this.o.language].month || 'Month') + '</td>' +
 							'<td><input type="checkbox" class="dateStatus" name="approximate" value="month" ' + (d.approximate.is('month') ? 'checked' : '') + '/></td>' +
 							'<td><input type="checkbox" class="dateStatus" name="uncertain" value="month" ' + (d.uncertain.is('month') ? 'checked' : '') + '/></td>' +
 							'</tr>';
 					/* falls through */
 					default:
 						html += '<tr>' +
-							'<td>Year</td>' +
+							'<td>' + (dates[this.o.language].year || 'Year') + '</td>' +
 							'<td><input type="checkbox" class="dateStatus" name="approximate" value="year" ' + (d.approximate.is('year') ? 'checked' : '') + '/></td>' +
 							'<td><input type="checkbox" class="dateStatus" name="uncertain" value="year" ' + (d.uncertain.is('year') ? 'checked' : '') + '/></td>' +
 							'</tr>';
@@ -1946,7 +1946,12 @@
 			monthsShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
 			today: "Today",
 			clear: "Clear",
-			titleFormat: "MM yyyy"
+			titleFormat: "MM yyyy",
+			approximate: "Approximate",
+			uncertain: "Uncertain",
+			day: "Day",
+			month: "Month",
+			year: "Year"
 		}
 	};
 
