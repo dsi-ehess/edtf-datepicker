@@ -1,0 +1,12 @@
+.github
+*-dist.zip
+
+# OS or Editor folders
+.DS_Store
+.idea
+
+# Folders to ignore
+node_modules
+
+assets/js/edtf.js
+assets/js/edtf.opt.js
