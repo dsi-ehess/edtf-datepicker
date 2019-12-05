@@ -1114,7 +1114,7 @@
 				prevMonth.approximate.value = d.approximate.value;
 				prevMonth.uncertain.value = d.uncertain.value;
 				prevMonth.setUTCDate(day - (prevMonth.getUTCDay() - this.o.weekStart + 7) % 7);
-				var nextMonth = new Date(prevMonth);
+				var nextMonth = new edtf.Date(prevMonth);
 				if (prevMonth.getUTCFullYear() < 100) {
 					nextMonth.setUTCFullYear(prevMonth.getUTCFullYear());
 				}
