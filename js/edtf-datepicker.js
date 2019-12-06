@@ -1018,7 +1018,7 @@
 			var endVal = startVal + step * 9;
 			var focusedVal = Math.floor(this.viewDate.year / step) * step;
 			var selected = $.map(this.dates, function (d) {
-				if (d.unspecified.is('year'))
+				if (d.significant || (d instanceof edtf.Date && d.unspecified.is('year')))
 					return null;
 				return Math.floor(d.year / step) * step;
 			});
@@ -1125,7 +1125,7 @@
 				prevMonth.approximate.value = d.approximate.value;
 				prevMonth.uncertain.value = d.uncertain.value;
 				prevMonth.setUTCDate(day - (prevMonth.getUTCDay() - this.o.weekStart + 7) % 7);
-				var nextMonth = new Date(prevMonth);
+				var nextMonth = new edtf.Date(prevMonth);
 				if (prevMonth.getUTCFullYear() < 100) {
 					nextMonth.setUTCFullYear(prevMonth.getUTCFullYear());
 				}
@@ -1261,7 +1261,7 @@
 				this.o.beforeShowYear
 			);
 			
-			if (!d.unspecified.value) {
+			if (d instanceof edtf.Date && !d.unspecified.value) {
 				this._fill_status_table('.datepicker-days', d);
 				this._fill_status_table('.datepicker-months', d);
 				this._fill_status_table('.datepicker-years', d);	
@@ -1311,7 +1311,7 @@
 				endMonth = this.o.endDate !== Infinity ? this.o.endDate.getUTCMonth() : Infinity,
 				prevIsDisabled,
 				nextIsDisabled,
-				unspecifiedMonth = d instanceof Date && (d.unspecified.is('year') || d.unspecified.is('month')),
+				unspecifiedMonth = d instanceof edtf.Date && (d.unspecified.is('year') || d.unspecified.is('month')),
 				factor = 1;
 			switch (this.viewMode) {
 				case 4:
@@ -1328,8 +1328,8 @@
 					nextIsDisabled = Math.floor(year / factor) * factor + factor > endYear;
 					break;
 				case 0:
-					prevIsDisabled = (year <= startYear && month <= startMonth) || !!(d.unspecified.month);
-					nextIsDisabled = (year >= endYear && month >= endMonth) || !!(d.unspecified.month);
+					prevIsDisabled = (year <= startYear && month <= startMonth) || unspecifiedMonth;
+					nextIsDisabled = (year >= endYear && month >= endMonth) || unspecifiedMonth;
 					break;
 			}
 
@@ -1346,25 +1346,30 @@
 
 			// Clicked on the switch
 			if (target.hasClass('datepicker-switch') && this.viewMode !== this.o.maxViewMode) {
-				switch (this.viewMode) {
-					case 3:
-						this.viewDate.unspecified.value -= this.viewDate.unspecified.is('year');
-						this.viewDate.unspecified.add(edtf.Bitmask.Y - 1);
-						break;
-					case 2:
-						this.viewDate.unspecified.value -= this.viewDate.unspecified.is('year');
-						this.viewDate.unspecified.add(edtf.Bitmask.YYXX);						
-						break;
-					case 1:
-						this.viewDate.unspecified.value -= this.viewDate.unspecified.is('year');
-						this.viewDate.unspecified.add(edtf.Bitmask.YYYX);
-						break;
-					default:
-						this.viewDate.precision = 1;
-						break;
+				if (this.viewDate instanceof edtf.Year)
+					this.viewDate.significant = (this.viewDate.significant || 0) + 1;
+				else {
+					switch (this.viewMode) {
+						case 3:
+							this.viewDate.unspecified.value -= this.viewDate.unspecified.is('year');
+							this.viewDate.unspecified.add(edtf.Bitmask.Y - 1);
+							break;
+						case 2:
+							this.viewDate.unspecified.value -= this.viewDate.unspecified.is('year');
+							this.viewDate.unspecified.add(edtf.Bitmask.YYXX);						
+							break;
+						case 1:
+							this.viewDate.unspecified.value -= this.viewDate.unspecified.is('year');
+							this.viewDate.unspecified.add(edtf.Bitmask.YYYX);
+							break;
+						default:
+							this.viewDate.precision = 1;
+							break;
+					}	
 				}
 				this._setDate(this.viewDate);
-				this.setViewMode(this.viewMode + 1);
+				if (this.viewDate.significant !== 1)
+					this.setViewMode(this.viewMode + 1);
 			}
 
 			// Clicked on today button
