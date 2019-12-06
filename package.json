@@ -16,7 +16,10 @@
     "LICENSE"
   ],
   "homepage": "https://github.com/dsi-ehess/edtf-datepicker",
-  "author": "Sylvain Bigonneau <sylvain@monroe-labs.com>",
+  "author": "DSI École des Hautes Etudes en Sciences Sociales (EHESS)",
+  "contributors": [
+    "Sylvain Bigonneau <sylvain@monroe-labs.com>"
+  ],
   "scripts": {
     "test": "grunt test",
     "build": "grunt dist"
